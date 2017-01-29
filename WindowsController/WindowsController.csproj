@@ -69,10 +69,12 @@
     <Compile Include="Model\CallRecord.cs" />
     <Compile Include="Communication\HookedClient.cs" />
     <Compile Include="Model\ApiMethod.cs" />
+    <Compile Include="Model\CallStackEntry.cs" />
     <Compile Include="Model\StructSerialization\FieldDescriptor.cs" />
     <Compile Include="Model\StructSerialization\FieldType.cs" />
     <Compile Include="Process\ProcessManager.cs" />
     <Compile Include="Process\ProcessHelper.cs" />
+    <Compile Include="Process\ProcessModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Memory\RemoteMemoryManager.cs" />

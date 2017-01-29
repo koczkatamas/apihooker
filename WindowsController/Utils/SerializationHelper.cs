@@ -61,9 +61,9 @@ namespace ApiHooker.Utils
                     if (cr.ApiMethod.SaveCallback)
                     {
                         var callStackLen = brCr.ReadUInt32();
-                        cr.CallStack = new List<uint>((int)callStackLen);
+                        cr.CallStack = new List<CallStackEntry>((int)callStackLen);
                         for(int i = 0; i < callStackLen; i++)
-                            cr.CallStack.Add(brCr.ReadUInt32());
+                            cr.CallStack.Add(new CallStackEntry { Address = brCr.ReadUInt32() });
                     }
 
                     cr.ParametersBeforeCall = ReadCallParameters(brCr, cr.ApiMethod.Arguments);

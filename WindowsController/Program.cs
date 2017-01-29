@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -48,9 +49,24 @@ namespace ApiHooker
                 Thread.Sleep(500);
 
                 var buffer = client.ReadBuffer();
+                var modules = ProcessHelper.GetProcessModules(testApp.Process.Id);
+
                 var callRecs = SerializationHelper.ProcessCallRecords(buffer, hookedMethods);
-                foreach(var callRec in callRecs)
+                foreach (var callRec in callRecs)
+                {
                     Console.WriteLine(callRec);
+
+                    foreach (var item in callRec.CallStack)
+                    {
+                        item.Module = modules.FirstOrDefault(x => x.BaseAddr <= item.Address && item.Address < x.EndAddr);
+                        if(item.Module != null)
+                            Console.WriteLine($" - {item.Module.Name}!0x{item.Address - item.Module.BaseAddr:x}");
+                        else
+                            Console.WriteLine($" - 0x{item.Address:x8}");
+                    }
+
+                    Console.WriteLine();
+                }
 
                 client.TerminateInjectionThread();
                 testApp.Process.WaitForExit();

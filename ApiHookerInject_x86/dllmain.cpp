@@ -12,5 +12,5 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 }
 
 extern "C" __declspec(dllexport) void Init(ApiHooker::InitParams* params) {
-	ApiHooker::ThreadFuncMsgBox(params);
+	ApiHooker::ThreadFunc(params);
 }

@@ -80,11 +80,6 @@ namespace ApiHooker
         internal string szModule;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
         internal string szExePath;
-
-        public override string ToString()
-        {
-            return $"{szModule}";
-        }
     }
 
     [Flags]
