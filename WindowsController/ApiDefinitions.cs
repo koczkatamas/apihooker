@@ -79,16 +79,16 @@ namespace ApiHooker
                 },
                 new FieldDescriptor(StructCoord) { Name = "dwBufferSize" },
                 new FieldDescriptor(StructCoord) { Name = "dwBufferCoord" },
-                new FieldDescriptor
-                {
-                    Name = "lpWriteRegion", Type = FieldType.Struct, PointerLevel = 1, Fields =
-                    {
-                        new FieldDescriptor { Name = "Left", Type = FieldType.ByteArray, Length = 2 },
-                        new FieldDescriptor { Name = "Top", Type = FieldType.ByteArray, Length = 2 },
-                        new FieldDescriptor { Name = "Right", Type = FieldType.ByteArray, Length = 2 },
-                        new FieldDescriptor { Name = "Bottom", Type = FieldType.ByteArray, Length = 2 },
-                    }
-                },
+                //new FieldDescriptor
+                //{
+                //    Name = "lpWriteRegion", Type = FieldType.Struct, PointerLevel = 1, Fields =
+                //    {
+                //        new FieldDescriptor { Name = "Left", Type = FieldType.ByteArray, Length = 2 },
+                //        new FieldDescriptor { Name = "Top", Type = FieldType.ByteArray, Length = 2 },
+                //        new FieldDescriptor { Name = "Right", Type = FieldType.ByteArray, Length = 2 },
+                //        new FieldDescriptor { Name = "Bottom", Type = FieldType.ByteArray, Length = 2 },
+                //    }
+                //},
             }
         };
     }

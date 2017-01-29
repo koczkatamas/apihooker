@@ -69,21 +69,30 @@ struct Hooker {
 		bw.write(&localBw.data[0], localBw.data.size(), true);
 		bwLock.Leave();
 
+		int callArgCount = 16;
+
+		uint32_t espBeforeOriginalCall = 0;
 		if (runOriginal) {
-			for (int i = info->arguments.size() - 1; i >= 0; i--) {
+			__asm mov espBeforeOriginalCall, esp
+			for (int i = callArgCount - 1; i >= 0; i--) {
 				uint32_t argValue = preCall->arguments[i];
-				__asm push argValue;
+				__asm push argValue
 			}
 		}
 
-		// we simulate ret N
-		preCall->EDI = preCall->oESP + 4 /* retVal */ + 4 * info->arguments.size();
-		*(uint32_t*)preCall->EDI = preCall->retAddr;
-
+		uint32_t espAfterOriginalCall = 0;
 		if (runOriginal) {
 			auto original = info->original;
 			__asm call original
+			__asm mov espAfterOriginalCall, esp
+			__asm mov esp, espBeforeOriginalCall
 		}
+
+		int argumentCount = runOriginal ? callArgCount - (espBeforeOriginalCall - espAfterOriginalCall) / sizeof(int) : info->arguments.size();
+
+		// helper to convert "ret N" into simple "ret" in HookHandlerPure, puts the return address into the stack and moves it to the right position
+		preCall->EDI = preCall->oESP + 4 /* retVal */ + argumentCount * sizeof(int);
+		*(uint32_t*)preCall->EDI = preCall->retAddr;
 	}
 
 	static HookedFunctionInfo* createHookInfo(std::vector<FieldDescriptor> arguments) {
@@ -114,6 +123,6 @@ std::vector<Hooker::HookedFunctionInfo*> Hooker::funcs;
 void __declspec(naked) HookHandlerPure() {
 	__asm pushad
 	__asm call Hooker::HookHandler
-	__asm mov esp, dword ptr[esp] // new esp == dword ptr[esp] == preCall->EDI
+	__asm mov esp, dword ptr[esp] // simulate ret N using preCall->EDI
 	__asm ret
 }
