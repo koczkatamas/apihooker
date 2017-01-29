@@ -54,26 +54,27 @@ struct Hooker {
 		bw.write(&localBw.data[0], localBw.data.size(), true);
 		bwLock.Leave();
 
-		int callArgCount = 16;
+		int argumentCount = info->arguments.size();
 
-		uint32_t espBeforeOriginalCall = 0;
 		if (runOriginal) {
+			uint32_t espBeforeOriginalCall;
 			__asm mov espBeforeOriginalCall, esp
+
+			int callArgCount = 16;
 			for (int i = callArgCount - 1; i >= 0; i--) {
 				uint32_t argValue = preCall->arguments[i];
 				__asm push argValue
 			}
-		}
 
-		uint32_t espAfterOriginalCall = 0;
-		if (runOriginal) {
 			auto original = info->original;
 			__asm call original
+
+			uint32_t espAfterOriginalCall;
 			__asm mov espAfterOriginalCall, esp
 			__asm mov esp, espBeforeOriginalCall
-		}
 
-		int argumentCount = runOriginal ? callArgCount - (espBeforeOriginalCall - espAfterOriginalCall) / sizeof(int) : info->arguments.size();
+			argumentCount = callArgCount - (espBeforeOriginalCall - espAfterOriginalCall) / sizeof(int);
+		}
 
 		// helper to convert "ret N" into simple "ret" in HookHandlerPure, puts the return address into the stack and moves it to the right position
 		preCall->EDI = preCall->oESP + 4 /* retVal */ + argumentCount * sizeof(int);
