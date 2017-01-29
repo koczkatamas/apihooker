@@ -1,9 +1,17 @@
 #include <windows.h>
 #include <stdio.h>
 
+void MyMagicFunction(int i) {
+	if (i == 0)
+		SetConsoleTitleA("ApiHooker TestApp 2");
+	else
+		MyMagicFunction(i - 1);
+}
+
 int main(void)
 {
 	SetConsoleTitleA("ApiHooker TestApp");
+	MyMagicFunction(10);
 
 	auto consoleWnd = GetStdHandle(STD_OUTPUT_HANDLE);
 
