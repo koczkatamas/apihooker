@@ -18,7 +18,7 @@ window.onload = function () {
     }
     startWebSocket();
     function onWsConnected() {
-        socket.send(JSON.stringify({ messageType: "call", resourceId: "api" }));
+        socket.send(JSON.stringify({ messageType: "call", resourceId: "api", methodName: "GetHookableMethods" }));
     }
 };
 //# sourceMappingURL=app.js.map
