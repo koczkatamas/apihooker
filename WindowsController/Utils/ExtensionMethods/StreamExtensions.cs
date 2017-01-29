@@ -1,8 +1,14 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace ApiHooker.Utils.ExtensionMethods
 {
+    public static class StringExtensions
+    {
+        public static string LcFirst(this string str) => String.IsNullOrEmpty(str) ? str : char.ToLower(str[0]) + str.Substring(1);
+    }
+
     public static class StreamExtensions
     {
         public static async Task<byte[]> ReadAsync(this Stream stream, int length)

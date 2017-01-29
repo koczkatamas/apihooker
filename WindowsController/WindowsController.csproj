@@ -54,17 +54,40 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="vtortola.WebSockets, Version=2.2.2.0, Culture=neutral, PublicKeyToken=7f78616efb4a208d, processorArchitecture=MSIL">
+      <HintPath>..\packages\vtortola.WebSocketListener.2.2.2.0\lib\net45\vtortola.WebSockets.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="vtortola.WebSockets.Deflate, Version=2.2.2.0, Culture=neutral, PublicKeyToken=7f78616efb4a208d, processorArchitecture=MSIL">
+      <HintPath>..\packages\vtortola.WebSocketListener.2.2.2.0\lib\net45\vtortola.WebSockets.Deflate.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="vtortola.WebSockets.Rfc6455, Version=2.2.2.0, Culture=neutral, PublicKeyToken=7f78616efb4a208d, processorArchitecture=MSIL">
+      <HintPath>..\packages\vtortola.WebSocketListener.2.2.2.0\lib\net45\vtortola.WebSockets.Rfc6455.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiDefinitions.cs" />
+    <Compile Include="UiApi\JsonRpc\JsonRpcTest.cs" />
+    <Compile Include="UiApi\JsonRpc\IUIObject.cs" />
+    <Compile Include="UiApi\JsonRpc\JsonRpc.cs" />
     <Compile Include="Model\CallParameter.cs" />
     <Compile Include="Model\CallRecord.cs" />
     <Compile Include="Communication\HookedClient.cs" />
@@ -78,6 +101,14 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Memory\RemoteMemoryManager.cs" />
+    <Compile Include="UiApi\JsonRpc\RpcMessage.cs" />
+    <Compile Include="UiApi\JsonRpc\RpcMessageError.cs" />
+    <Compile Include="UiApi\JsonRpc\RpcMessageException.cs" />
+    <Compile Include="UiApi\JsonRpc\RpcMessageType.cs" />
+    <Compile Include="UiApi\UIApi.cs" />
+    <Compile Include="UiApi\UIHookableMethod.cs" />
+    <Compile Include="UiApi\UIProcess.cs" />
+    <Compile Include="Utils\ExtensionMethods\DictionaryExtensions.cs" />
     <Compile Include="Utils\SerializationHelper.cs" />
     <Compile Include="Utils\ExtensionMethods\BinaryWriterExtensions.cs" />
     <Compile Include="Utils\ExtensionMethods\StreamExtensions.cs" />
@@ -87,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestApp", "TestApp\TestApp.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApiHookerInject_x86", "ApiHookerInject_x86\ApiHookerInject_x86.vcxproj", "{85B354A6-BCCD-49BC-BF07-702BE985787E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiHookerUI", "ApiHookerUI\ApiHookerUI.csproj", "{54B9D577-AEB8-4464-A347-0C36FAE15AAB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,24 @@ Global
 		{85B354A6-BCCD-49BC-BF07-702BE985787E}.ReleaseForDebug|x64.Build.0 = Release|x64
 		{85B354A6-BCCD-49BC-BF07-702BE985787E}.ReleaseForDebug|x86.ActiveCfg = Release|Win32
 		{85B354A6-BCCD-49BC-BF07-702BE985787E}.ReleaseForDebug|x86.Build.0 = Release|Win32
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Debug|x64.Build.0 = Debug|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Debug|x86.Build.0 = Debug|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Release|x64.ActiveCfg = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Release|x64.Build.0 = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Release|x86.ActiveCfg = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.Release|x86.Build.0 = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.ReleaseForDebug|Any CPU.ActiveCfg = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.ReleaseForDebug|Any CPU.Build.0 = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.ReleaseForDebug|x64.ActiveCfg = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.ReleaseForDebug|x64.Build.0 = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.ReleaseForDebug|x86.ActiveCfg = Release|Any CPU
+		{54B9D577-AEB8-4464-A347-0C36FAE15AAB}.ReleaseForDebug|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
