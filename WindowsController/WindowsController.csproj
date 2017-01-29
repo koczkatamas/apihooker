@@ -59,6 +59,7 @@
     <Compile Include="Utils\ExtensionMethods\BinaryWriterExtensions.cs" />
     <Compile Include="Utils\ExtensionMethods\StreamExtensions.cs" />
     <Compile Include="Utils\ExtensionMethods\LinqExtensions.cs" />
+    <Compile Include="VisualStudio\VSDebuggerHelper.cs" />
     <Compile Include="WinAPI\WinApi.cs" />
   </ItemGroup>
   <ItemGroup>

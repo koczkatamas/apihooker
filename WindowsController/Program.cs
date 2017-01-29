@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using ApiHooker.Communication;
 using ApiHooker.Utils;
+using ApiHooker.VisualStudio;
 
 namespace ApiHooker
 {
@@ -33,6 +34,8 @@ namespace ApiHooker
                     ApiDefinitions.SetConsoleScreenBufferSize,
                     ApiDefinitions.WriteConsoleOutputA
                 });
+
+                VsDebuggerHelper.AttachToProcess(testApp.Process.Id);
 
                 testApp.ResumeMainThread();
 
