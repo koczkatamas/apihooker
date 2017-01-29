@@ -13,6 +13,7 @@ using ApiHooker.UiApi;
 using ApiHooker.UiApi.JsonRpc;
 using ApiHooker.Utils;
 using ApiHooker.VisualStudio;
+using Newtonsoft.Json;
 using vtortola.WebSockets;
 using vtortola.WebSockets.Rfc6455;
 
@@ -38,9 +39,13 @@ namespace ApiHooker
                 {
                     var client = await webSocket.AcceptWebSocketAsync(ct);
                     if (client.HttpRequest.Headers["Origin"] != "http://localhost:8000")
+                    {
+                        await client.WriteStringAsync(@"{ ""Error"": ""NotAllowedOrigin"" }", ct);
                         client.Close();
+                        continue;
+                    }
 
-                    while (true)
+                    while (client.IsConnected)
                     {
                         var request = await client.ReadStringAsync(ct);
                         var response = await jsonRpc.ProcessMessageAsync(request);
