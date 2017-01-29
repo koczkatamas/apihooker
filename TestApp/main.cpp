@@ -23,6 +23,11 @@ int main(void)
 	charInfo = { 'B', FOREGROUND_GREEN | FOREGROUND_INTENSITY };
 	WriteConsoleOutputA(consoleWnd, &charInfo, { 1, 1 }, { 0, 0 }, &writeRegion);
 
+	char consoleTitle[256];
+	auto consoleTitleLen = GetConsoleTitleA(consoleTitle, sizeof(consoleTitle));
+
+	printf("Console title: %s, length: %d\n", consoleTitle, consoleTitleLen);
+
 	//getchar();
 
 	Sleep(5000);

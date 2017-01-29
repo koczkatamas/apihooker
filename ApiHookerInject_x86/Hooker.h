@@ -13,7 +13,17 @@ void HookHandlerPure();
 
 struct Hooker {
 	struct PreCallValues {
-		uint32_t EDI, ESI, EBP, oESP, EBX, EDX, ECX, EAX, hookCallAddr, retAddr;
+		union {
+			uint32_t EDI;
+			uint32_t returnESP;
+		};
+		
+		union {
+			uint32_t ESI;
+			uint32_t returnEAX;
+		};
+
+		uint32_t EBP, oESP, EBX, EDX, ECX, EAX, hookCallAddr, retAddr;
 		uint32_t arguments[16];
 	};
 
@@ -56,6 +66,7 @@ struct Hooker {
 
 		int argumentCount = info->arguments.size();
 
+		uint32_t returnValue = 0;
 		if (runOriginal) {
 			uint32_t espBeforeOriginalCall;
 			__asm mov espBeforeOriginalCall, esp
@@ -68,6 +79,7 @@ struct Hooker {
 
 			auto original = info->original;
 			__asm call original
+			__asm mov returnValue, eax
 
 			uint32_t espAfterOriginalCall;
 			__asm mov espAfterOriginalCall, esp
@@ -77,8 +89,9 @@ struct Hooker {
 		}
 
 		// helper to convert "ret N" into simple "ret" in HookHandlerPure, puts the return address into the stack and moves it to the right position
-		preCall->EDI = preCall->oESP + 4 /* retVal */ + argumentCount * sizeof(int);
-		*(uint32_t*)preCall->EDI = preCall->retAddr;
+		preCall->returnESP = preCall->oESP + 4 /* retVal */ + argumentCount * sizeof(int);
+		*(uint32_t*)preCall->returnESP = preCall->retAddr;
+		preCall->returnEAX = returnValue;
 	}
 
 	static HookedFunctionInfo* createHookInfo(std::vector<FieldDescriptor> arguments) {
@@ -111,6 +124,7 @@ void __declspec(naked) HookHandlerPure() {
 	// stack here: EDI | ESI | EBP | oESP | EBX | EDX | ECX | EAX | hookCallAddr | retAddr | args[0] | args[1] | args[2] | args[3] | ...
 	// oESP contains the address of hookCallAddr, etc (so everything except the values put there with pushad)
 	__asm call Hooker::HookHandler
-	__asm mov esp, dword ptr[esp] // simulate ret N using preCall->EDI
+	__asm mov eax, dword ptr[esp + 4] // preCall->returnEAX
+	__asm mov esp, dword ptr[esp] // simulate ret N using preCall->returnESP
 	__asm ret
 }

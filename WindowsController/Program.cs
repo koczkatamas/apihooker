@@ -32,7 +32,8 @@ namespace ApiHooker
                     //ApiDefinitions.SetConsoleTitleA,
                     //ApiDefinitions.SetConsoleWindowInfo,
                     //ApiDefinitions.SetConsoleScreenBufferSize,
-                    ApiDefinitions.WriteConsoleOutputA
+                    ApiDefinitions.WriteConsoleOutputA,
+                    ApiDefinitions.GetConsoleTitleA
                 });
 
                 VsDebuggerHelper.AttachToProcess(testApp.Process.Id);
