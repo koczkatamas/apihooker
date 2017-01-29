@@ -12,14 +12,15 @@ namespace ApiHooker
     {
         static void Main(string[] args)
         {
+            var serverPort = 1338;
+            var tcpServer = new TcpListener(IPAddress.Loopback, serverPort);
+            tcpServer.Start();
+
             foreach (var pkill in Process.GetProcessesByName("TestApp"))
                 pkill.Kill();
 
             var testApp = ProcessManager.LaunchSuspended(AppDomain.CurrentDomain.BaseDirectory + "TestApp.exe");
-            testApp.Inject();
-
-            var tcpServer = new TcpListener(IPAddress.Loopback, 1337);
-            tcpServer.Start();
+            testApp.InjectHookerLib(serverPort);
 
             using (var client = new HookedClient(tcpServer.AcceptTcpClient()))
             {

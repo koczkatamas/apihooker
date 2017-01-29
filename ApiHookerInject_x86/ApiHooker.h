@@ -12,17 +12,21 @@
 #define RETERR(a) { auto retCode = (int)(a); if(retCode != 0) return retCode; }
 
 struct ApiHooker {
-	static DWORD WINAPI ThreadFuncMsgBox(LPVOID lpParam) {
-		auto result = ThreadFunc(lpParam);
+	struct InitParams {
+		uint32_t tcpPort;
+	};
+
+	static DWORD WINAPI ThreadFuncMsgBox(InitParams* params) {
+		auto result = ThreadFunc(params);
 		if (result != 0)
 			MessageBoxA(0, (std::string("ApiHookerThreadFunc result: ") + std::to_string(result)).c_str(), "Error", 0);
 		return result;
 	}
 
-	static DWORD WINAPI ThreadFunc(LPVOID lpParam) {
+	static DWORD WINAPI ThreadFunc(InitParams* params) {
 		using PacketType = ControllerClient::PacketType;
 
-		ControllerClient client(1337);
+		ControllerClient client(params == nullptr ? 1337 : params->tcpPort);
 		RETERR(client.connect());
 
 		MH_Initialize();

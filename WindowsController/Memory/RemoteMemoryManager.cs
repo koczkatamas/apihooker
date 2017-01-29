@@ -58,7 +58,7 @@ namespace ApiHooker
             uint numBytesWritten;
             WinApi.WriteProcessMemoryBuffer(HProcess, remoteAddr, buffer, buffer.Length, out numBytesWritten);
             if(numBytesWritten != buffer.Length)
-                throw new Exception("Could not write enought bytes via WriteProcessMemoryBuffer!");
+                throw new Exception("Could not write enough bytes via WriteProcessMemoryBuffer!");
             return remoteAddr;
         }
 
@@ -91,6 +91,13 @@ namespace ApiHooker
             {
                 Marshal.FreeHGlobal(localPtr);
             }
+        }
+
+        public byte[] Read(IntPtr address, int length)
+        {
+            var result = new byte[length];
+            uint read;
+            return WinApi.ReadProcessMemory(HProcess, address, result, length, out read) && read == length ? result : null;
         }
     }
 }

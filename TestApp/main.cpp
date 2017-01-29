@@ -25,7 +25,7 @@ int main(void)
 
 	//getchar();
 
-	Sleep(1000);
+	Sleep(5000);
 
 	return 42;
 }

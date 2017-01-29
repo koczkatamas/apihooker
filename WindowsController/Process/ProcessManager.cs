@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ApiHooker
 {
@@ -11,8 +13,7 @@ namespace ApiHooker
         public RemoteMemoryManager MemoryManager { get; protected set; }
 
         public string InjectedDllPath { get; protected set; }
-        public uint InjectedThreadId { get; protected set; }
-        public IntPtr InjectedThreadHandle { get; protected set; }
+        public uint InjectedDllBaseAddr { get; protected set; }
 
         protected ProcessManager(ProcessInformation procInfo)
         {
@@ -35,29 +36,51 @@ namespace ApiHooker
             return new ProcessManager(procInfo);
         }
 
-        public void Inject(string injectionDllPath)
+        public uint CallRemoteFunction(long funcAddr, IntPtr data, bool wait = true)
         {
-            InjectedDllPath = injectionDllPath;
-
-            var hKernel32 = WinApi.LoadLibrary("kernel32.dll");
-            var hLoadLibrary = WinApi.GetProcAddress(hKernel32, "LoadLibraryA");
-
             uint threadId;
-            InjectedThreadHandle = WinApi.CreateRemoteThread(ProcessInformation.hProcess, IntPtr.Zero, 0, hLoadLibrary, MemoryManager.Copy(InjectedDllPath), 0, out threadId);
-            InjectedThreadId = threadId;
-            WinApi.WaitForSingleObject(InjectedThreadHandle, (uint)WaitForSingleObjectTimeout.Infinite);
+            var newThreadHandle = WinApi.CreateRemoteThread(ProcessInformation.hProcess, IntPtr.Zero, 0, new IntPtr(funcAddr), data, 0, out threadId);
 
-            uint injectionDllBaseAddr;
-            if (!WinApi.GetExitCodeThread(InjectedThreadHandle, out injectionDllBaseAddr))
-                throw new Exception("Could not get Injection DLL base address!");
+            if (!wait)
+                return 0;
+
+            WinApi.WaitForSingleObject(newThreadHandle, (uint)WaitForSingleObjectTimeout.Infinite);
+
+            uint returnValue;
+            if (!WinApi.GetExitCodeThread(newThreadHandle, out returnValue))
+                throw new Exception("Could not get return value after calling remote function!");
+            return returnValue;
         }
 
-        public void Inject()
+        static long GetProcAddr(string libraryPath, string funcName, bool absolute = false)
+        {
+            var baseAddr = WinApi.LoadLibrary(libraryPath);
+            var absAddr = WinApi.GetProcAddress(baseAddr, funcName).ToInt64();
+            return absolute ? absAddr : absAddr - baseAddr.ToInt64();
+        }
+
+        public void InjectDll(string injectionDllPath)
+        {
+            InjectedDllPath = injectionDllPath;
+            var hLoadLibrary = GetProcAddr("kernel32.dll", "LoadLibraryA", true);
+            InjectedDllBaseAddr = CallRemoteFunction(hLoadLibrary, MemoryManager.Copy(injectionDllPath));
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct InitParams
+        {
+            public UInt32 tcpPort;
+        }
+
+        public void InjectHookerLib(int tcpPort)
         {
             if (ProcessHelper.Is64Bit(Process.Handle))
                 throw new Exception("Injecting into 64-bit processes is not supported yet!");
 
-            Inject(AppDomain.CurrentDomain.BaseDirectory + "ApiHookerInject_x86.dll");
+            var injDllPath = AppDomain.CurrentDomain.BaseDirectory + "ApiHookerInject_x86.dll";
+            InjectDll(injDllPath);
+            var initAddr = GetProcAddr(injDllPath, "Init");
+            CallRemoteFunction(InjectedDllBaseAddr + initAddr, MemoryManager.Copy(new InitParams { tcpPort = (uint)tcpPort }), false);
         }
 
         public void ResumeMainThread()
