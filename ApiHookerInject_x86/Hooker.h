@@ -41,21 +41,6 @@ struct Hooker {
 		int threadId = __readfsdword(0x24);
 
 		// TODO: add thread-safety
-
-		//	if (info->argumentCount > 0) {
-		//		uint32_t* currPtr = &preCall->arguments[0];
-		//		void* endPtr = &preCall->arguments[info->argumentCount];
-		//		__asm mov eax, currPtr
-		//		__asm mov ebx, endPtr
-		//argPush:
-		//		__asm push dword ptr[eax];
-		//		__asm add eax, 4
-		//		__asm cmp eax, ebx
-		//		__asm jl argPush
-		//	}
-
-		//info->arguments.fields
-
 		auto callId = InterlockedIncrement(&lastCallId);
 
 		auto argStartPtr = (uint8_t*)&preCall->arguments[0];
@@ -122,6 +107,8 @@ std::vector<Hooker::HookedFunctionInfo*> Hooker::funcs;
 
 void __declspec(naked) HookHandlerPure() {
 	__asm pushad
+	// stack here: EDI | ESI | EBP | oESP | EBX | EDX | ECX | EAX | hookCallAddr | retAddr | args[0] | args[1] | args[2] | args[3] | ...
+	// oESP contains the address of hookCallAddr, etc (so everything except the values put there with pushad)
 	__asm call Hooker::HookHandler
 	__asm mov esp, dword ptr[esp] // simulate ret N using preCall->EDI
 	__asm ret
