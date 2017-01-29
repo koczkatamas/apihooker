@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using ApiHooker.Communication;
+using ApiHooker.Utils;
 
 namespace ApiHooker
 {
@@ -23,13 +23,29 @@ namespace ApiHooker
 
             using (var client = new HookedClient(tcpServer.AcceptTcpClient()))
             {
-                client.ShowMessageBox("Hello World!");
-                client.TerminateInjectionThread();
+                //client.ShowMessageBox("Hello World!");
+
+                var hookedMethods = client.HookFuncs(new[]
+                {
+                    ApiDefinitions.SetConsoleTitleA,
+                    ApiDefinitions.SetConsoleWindowInfo,
+                    ApiDefinitions.SetConsoleScreenBufferSize,
+                    ApiDefinitions.WriteConsoleOutputA
+                });
 
                 testApp.ResumeMainThread();
+
+                Thread.Sleep(500);
+
+                var buffer = client.ReadBuffer();
+                var callRecs = SerializationHelper.ProcessCallRecords(buffer, hookedMethods);
+
+                client.TerminateInjectionThread();
+                testApp.Process.WaitForExit();
             }
 
-            testApp.Process.WaitForExit();
+            Console.WriteLine("Before exit.");
+            Console.ReadLine();
         }
     }
 }

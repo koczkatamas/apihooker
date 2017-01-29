@@ -60,12 +60,12 @@ struct ControllerClient {
 		if (recv(socket, reinterpret_cast<char*>(&result.type), sizeof(result.type), 0) != sizeof(PacketType))
 			return Result::TypeReadError;
 
-		uint32_t packetLen;
-		if (recv(socket, reinterpret_cast<char*>(&packetLen), sizeof(packetLen), 0) != sizeof(packetLen))
+		uint32_t payloadLen;
+		if (recv(socket, reinterpret_cast<char*>(&payloadLen), sizeof(payloadLen), 0) != sizeof(payloadLen))
 			return Result::LengthReadError;
 
-		result.payload.resize(packetLen);
-		if (recv(socket, reinterpret_cast<char*>(result.payload.data()), packetLen, 0) != packetLen)
+		result.payload.resize(payloadLen);
+		if (payloadLen != 0 && recv(socket, reinterpret_cast<char*>(result.payload.data()), payloadLen, 0) != payloadLen)
 			return Result::PayloadReadError;
 
 		return Result::OK;

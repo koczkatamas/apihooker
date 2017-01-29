@@ -115,5 +115,5 @@ void __declspec(naked) HookHandlerPure() {
 	__asm pushad
 	__asm call Hooker::HookHandler
 	__asm mov esp, dword ptr[esp] // new esp == dword ptr[esp] == preCall->EDI
-		__asm ret
+	__asm ret
 }

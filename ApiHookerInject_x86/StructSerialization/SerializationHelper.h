@@ -39,8 +39,7 @@ struct SerializationHelper {
 		if (desc.type == FieldType::ByteArray) {
 			if (desc.length == -1) return false;
 			writer.write((uint8_t*)dataPtr, desc.length);
-			if (!desc.isPointer)
-				data += desc.length;
+			dataPtr += desc.length;
 		}
 		else if (desc.type == FieldType::NullTerminatedAnsiString) {
 			auto str = (char*)dataPtr;
@@ -53,6 +52,9 @@ struct SerializationHelper {
 		}
 		else
 			return false;
+
+		if (!desc.isPointer)
+			data = dataPtr;
 
 		return true;
 	}

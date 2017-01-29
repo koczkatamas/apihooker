@@ -23,7 +23,9 @@ int main(void)
 	charInfo = { 'B', FOREGROUND_GREEN | FOREGROUND_INTENSITY };
 	WriteConsoleOutputA(consoleWnd, &charInfo, { 1, 1 }, { 0, 0 }, &writeRegion);
 
-	getchar();
+	//getchar();
+
+	Sleep(1000);
 
 	return 42;
 }
