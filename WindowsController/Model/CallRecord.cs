@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ApiHooker.Utils.ExtensionMethods;
 
 namespace ApiHooker.Model
@@ -16,6 +17,7 @@ namespace ApiHooker.Model
         public CallParameter[] ParametersBeforeCall { get; set; }
         public UInt32 ReturnValue { get; set; }
         public CallParameter[] ParametersAfterCall { get; set; }
+        public List<UInt32> CallStack { get; set; }
 
         public override string ToString()
         {

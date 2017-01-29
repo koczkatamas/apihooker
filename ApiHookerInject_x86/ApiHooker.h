@@ -53,12 +53,14 @@ struct ApiHooker {
 				for (uint32_t i = 0; i < funcLen; i++) {
 					auto moduleName = br.readLengthPrefixedStr();
 					auto functionName = br.readLengthPrefixedStr();
+					auto saveCallStack = br.readByte();
 					auto typeDescBytes = br.readLengthPrefixed();
 					auto typeDesc = SerializationHelper::readTypeDesc(BinaryReader(typeDescBytes));
 
 					auto hModule = GetModuleHandle(moduleName.c_str());
 					auto pTarget = GetProcAddress(hModule, functionName.c_str());
 					auto info = Hooker::hookThis(pTarget, typeDesc);
+					info->saveCallStack = saveCallStack == 1;
 					response.writeUint32(info == nullptr ? -1 : info->id);
 				}
 				MH_EnableHook(MH_ALL_HOOKS);

@@ -58,6 +58,14 @@ namespace ApiHooker.Utils
                 if (hookedMethods != null)
                 {
                     cr.ApiMethod = hookedMethods.MethodIds[cr.FunctionId];
+                    if (cr.ApiMethod.SaveCallback)
+                    {
+                        var callStackLen = brCr.ReadUInt32();
+                        cr.CallStack = new List<uint>((int)callStackLen);
+                        for(int i = 0; i < callStackLen; i++)
+                            cr.CallStack.Add(brCr.ReadUInt32());
+                    }
+
                     cr.ParametersBeforeCall = ReadCallParameters(brCr, cr.ApiMethod.Arguments);
                     cr.ReturnValue = brCr.ReadUInt32();
                     cr.ParametersAfterCall = ReadCallParameters(brCr, cr.ApiMethod.Arguments);

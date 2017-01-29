@@ -32,6 +32,7 @@ struct Hooker {
 		LPVOID original;
 		int id;
 		bool hookActive;
+		bool saveCallStack;
 		std::vector<FieldDescriptor> arguments;
 	};
 
@@ -58,6 +59,27 @@ struct Hooker {
 		localBw.writeUint32(callId);
 		localBw.writeUint32(info->id);
 		localBw.writeUint32(threadId);
+
+		if (info->saveCallStack) {
+			std::vector<void*> callStack;
+			callStack.push_back((void*)preCall->retAddr);
+
+			void** currEbp;
+			__asm mov currEbp, ebp
+
+			while (true) {
+				currEbp = ((void***)currEbp)[0];
+
+				if (IsBadReadPtr(currEbp, sizeof(void*) * 2))
+					break;
+
+				callStack.push_back(currEbp[1]);
+			}
+
+			localBw.writeUint32(callStack.size());
+			localBw.write((uint8_t*)callStack.data(), callStack.size() * sizeof(callStack[0]));
+		}
+
 		SerializationHelper::writeFields(localBw, info->arguments, argStartPtr);
 
 		int argumentCount = info->arguments.size();

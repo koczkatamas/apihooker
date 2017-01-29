@@ -9,6 +9,7 @@ namespace ApiHooker.Model
         public string DllName { get; set; }
         public string MethodName { get; set; }
         public List<FieldDescriptor> Arguments { get; set; } = new List<FieldDescriptor>();
+        public bool SaveCallback { get; set; }
 
         public override string ToString()
         {

@@ -81,6 +81,7 @@ namespace ApiHooker.Communication
             {
                 bw.WriteLenPrefixed(m.DllName);
                 bw.WriteLenPrefixed(m.MethodName);
+                bw.Write((byte)(m.SaveCallback ? 1 : 0));
                 bw.WriteLenPrefixed(SerializationHelper.SerializeFieldDescriptors(m.Arguments.ToArray()));
             }
 

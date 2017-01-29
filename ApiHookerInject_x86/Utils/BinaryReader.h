@@ -18,6 +18,10 @@ struct BinaryReader {
 		return *(uint32_t*)read(4);
 	}
 
+	uint8_t readByte() {
+		return *read(1);
+	}
+
 	std::vector<uint8_t> readLengthPrefixed() {
 		auto len = readUint32();
 		auto ptr = read(len);
