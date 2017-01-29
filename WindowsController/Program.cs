@@ -29,9 +29,9 @@ namespace ApiHooker
 
                 var hookedMethods = client.HookFuncs(new[]
                 {
-                    //ApiDefinitions.SetConsoleTitleA,
-                    //ApiDefinitions.SetConsoleWindowInfo,
-                    //ApiDefinitions.SetConsoleScreenBufferSize,
+                    ApiDefinitions.SetConsoleTitleA,
+                    ApiDefinitions.SetConsoleWindowInfo,
+                    ApiDefinitions.SetConsoleScreenBufferSize,
                     ApiDefinitions.WriteConsoleOutputA,
                     ApiDefinitions.GetConsoleTitleA
                 });

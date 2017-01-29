@@ -31,6 +31,7 @@ struct SerializationHelper {
 
 	static bool writeField(BinaryWriter& writer, FieldDescriptor& desc, uint8_t*& data) {
 		uint8_t* dataPtr = data;
+		desc.isPointer |= desc.type == FieldType::NullTerminatedAnsiString;
 		if (desc.isPointer) {
 			dataPtr = (uint8_t*)*(uint32_t*)data;
 			data += 4;

@@ -58,7 +58,9 @@ namespace ApiHooker.Utils
                 if (hookedMethods != null)
                 {
                     cr.ApiMethod = hookedMethods.MethodIds[cr.FunctionId];
-                    cr.Parameters = ReadCallParameters(brCr, cr.ApiMethod.Arguments);
+                    cr.ParametersBeforeCall = ReadCallParameters(brCr, cr.ApiMethod.Arguments);
+                    cr.ReturnValue = brCr.ReadUInt32();
+                    cr.ParametersAfterCall = ReadCallParameters(brCr, cr.ApiMethod.Arguments);
                 }
 
                 result.Add(cr);

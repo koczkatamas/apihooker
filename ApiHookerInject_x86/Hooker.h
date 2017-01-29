@@ -60,10 +60,6 @@ struct Hooker {
 		localBw.writeUint32(threadId);
 		SerializationHelper::writeFields(localBw, info->arguments, argStartPtr);
 
-		bwLock.Enter();
-		bw.write(&localBw.data[0], localBw.data.size(), true);
-		bwLock.Leave();
-
 		int argumentCount = info->arguments.size();
 
 		uint32_t returnValue = 0;
@@ -86,7 +82,15 @@ struct Hooker {
 			__asm mov esp, espBeforeOriginalCall
 
 			argumentCount = callArgCount - (espBeforeOriginalCall - espAfterOriginalCall) / sizeof(int);
+
+			localBw.writeUint32(returnValue);
+			argStartPtr = (uint8_t*)&preCall->arguments[0];
+			SerializationHelper::writeFields(localBw, info->arguments, argStartPtr);
 		}
+
+		bwLock.Enter();
+		bw.write(&localBw.data[0], localBw.data.size(), true);
+		bwLock.Leave();
 
 		// helper to convert "ret N" into simple "ret" in HookHandlerPure, puts the return address into the stack and moves it to the right position
 		preCall->returnESP = preCall->oESP + 4 /* retVal */ + argumentCount * sizeof(int);

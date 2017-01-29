@@ -98,7 +98,7 @@ namespace ApiHooker
             MethodName = "GetConsoleTitleA",
             Arguments =
             {
-                new FieldDescriptor { Name = "lpConsoleTitle", Type = FieldType.ByteArray, Length = 4 },
+                new FieldDescriptor { Name = "lpConsoleTitle", Type = FieldType.NullTerminatedAnsiString },
                 new FieldDescriptor { Name = "nSize", Type = FieldType.ByteArray, Length = 4 },
             }
         };
