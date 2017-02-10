@@ -1,0 +1,5 @@
+{
+  "MessageType": "CallResponse",
+  "Error": "NoError",
+  "Result": "echo response: data"
+}

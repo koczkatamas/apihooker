@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,6 +15,7 @@ using ApiHooker.UiApi.JsonRpc;
 using ApiHooker.Utils;
 using ApiHooker.VisualStudio;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using vtortola.WebSockets;
 using vtortola.WebSockets.Rfc6455;
 
@@ -21,6 +23,23 @@ namespace ApiHooker
 {
     class Program
     {
+        static void Main(string[] args)
+        {
+            var uiApi = new UIApi();
+            var jsonRpc = new JsonRpc();
+            jsonRpc.PublishObject(uiApi);
+
+            var typeInfos = jsonRpc.TypeInformation;
+            var typeInfosJson = JsonConvert.SerializeObject(typeInfos.Select(x => x.Value), Formatting.Indented);
+
+            JsonRpcTest.TestRpc();
+
+            UIApiAsync(CancellationToken.None);
+
+            Console.WriteLine("UI API active. Press ENTER to exit.");
+            Console.ReadLine();
+        }
+
         static async Task UIApiAsync(CancellationToken ct)
         {
             try
@@ -38,18 +57,26 @@ namespace ApiHooker
                 while (!ct.IsCancellationRequested)
                 {
                     var client = await webSocket.AcceptWebSocketAsync(ct);
-                    if (client.HttpRequest.Headers["Origin"] != "http://localhost:8000")
-                    {
-                        await client.WriteStringAsync(@"{ ""Error"": ""NotAllowedOrigin"" }", ct);
-                        client.Close();
-                        continue;
-                    }
 
-                    while (client.IsConnected)
+                    try
                     {
-                        var request = await client.ReadStringAsync(ct);
-                        var response = await jsonRpc.ProcessMessageAsync(request);
-                        await client.WriteStringAsync(response, ct);
+                        if (client.HttpRequest.Headers["Origin"] != "http://localhost:8000")
+                        {
+                            await client.WriteStringAsync(@"{ ""Error"": ""NotAllowedOrigin"" }", ct);
+                            client.Close();
+                            continue;
+                        }
+
+                        while (client.IsConnected)
+                        {
+                            var request = await client.ReadStringAsync(ct);
+                            var response = await jsonRpc.ProcessMessageAsync(request);
+                            await client.WriteStringAsync(response, ct);
+                        }
+                    }
+                    catch (Exception clientExc)
+                    {
+                        Console.WriteLine($"[UIApi] Client Exception: {clientExc}");
                     }
                 }
 
@@ -116,15 +143,6 @@ namespace ApiHooker
                 client.TerminateInjectionThread();
                 testApp.Process.WaitForExit();
             }
-        }
-
-        static void Main(string[] args)
-        {
-            //JsonRpcTest.TestRpc();
-            UIApiAsync(CancellationToken.None);
-
-            Console.WriteLine("UI API active. Press ENTER to exit.");
-            Console.ReadLine();
         }
     }
 }

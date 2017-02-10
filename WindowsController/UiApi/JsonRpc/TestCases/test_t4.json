@@ -1,0 +1,30 @@
+{
+  "MessageType": "CallResponse",
+  "Error": "NoError",
+  "Result": [
+    {
+      "ResourceId": "hookableMethod/SetConsoleTitleA",
+      "Name": "SetConsoleTitleA"
+    },
+    {
+      "ResourceId": "hookableMethod/SetConsoleWindowInfo",
+      "Name": "SetConsoleWindowInfo"
+    },
+    {
+      "ResourceId": "hookableMethod/StructCoord",
+      "Name": "StructCoord"
+    },
+    {
+      "ResourceId": "hookableMethod/SetConsoleScreenBufferSize",
+      "Name": "SetConsoleScreenBufferSize"
+    },
+    {
+      "ResourceId": "hookableMethod/WriteConsoleOutputA",
+      "Name": "WriteConsoleOutputA"
+    },
+    {
+      "ResourceId": "hookableMethod/GetConsoleTitleA",
+      "Name": "GetConsoleTitleA"
+    }
+  ]
+}

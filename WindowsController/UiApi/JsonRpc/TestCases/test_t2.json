@@ -1,0 +1,8 @@
+{
+  "MessageType": "CallResponse",
+  "Error": "NoError",
+  "Result": {
+    "ResourceId": "process/path",
+    "Path": "path"
+  }
+}
