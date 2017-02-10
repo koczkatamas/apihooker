@@ -2,7 +2,7 @@
 window.onload = () => {
     function startWebSocket() {
         socket = new WebSocket("ws://127.0.0.1:1338/");
-        socket.onmessage = event => console.log('weboscket msg', event.data);
+        socket.onmessage = event => console.log('websocket msg', event.data);
         socket.onopen = openEvent => {
             console.log('websocket connected.');
             onWsConnected();
