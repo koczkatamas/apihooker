@@ -20,7 +20,7 @@ namespace LiveObjects.ModelDescription
 
         public override object Serialize(IObjectContext context, object value)
         {
-            context.PublishObject((IUIObject) value);
+            context.PublishObject((ILiveObject) value);
             return base.Serialize(context, value);
         }
     }

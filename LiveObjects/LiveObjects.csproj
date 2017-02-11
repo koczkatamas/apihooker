@@ -63,7 +63,7 @@
     <Compile Include="ModelDescription\Helpers\LiveObjectResolver.cs" />
     <Compile Include="ObjectContext\IObjectContext.cs" />
     <Compile Include="ObjectContext\IObjectRepository.cs" />
-    <Compile Include="ModelDescription\IUIObject.cs" />
+    <Compile Include="ModelDescription\ILiveObject.cs" />
     <Compile Include="Communication\MessageBridge.cs" />
     <Compile Include="ModelDescription\Attributes\PublishAttribute.cs" />
     <Compile Include="Test\TestObject.cs" />

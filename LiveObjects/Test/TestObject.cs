@@ -6,7 +6,7 @@ using LiveObjects.ModelDescription;
 namespace LiveObjects.Test
 {
     [PublicationPolicy(DefaultPublicationMode.OptIn)]
-    public class TestObject : IUIObject, INotifyPropertyChanged
+    public class TestObject : ILiveObject, INotifyPropertyChanged
     {
         public string ResourceId => "TestObject";
 

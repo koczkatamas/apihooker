@@ -1,0 +1,12 @@
+[
+  {
+    "MessageType": "PropertyChanged",
+    "Error": "NoError",
+    "MessageId": null,
+    "ResourceId": "TestObject",
+    "MethodName": null,
+    "PropertyName": "StringProperty",
+    "Arguments": null,
+    "Result": "new StringProperty value"
+  }
+]

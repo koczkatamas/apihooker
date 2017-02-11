@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using LiveObjects.DependencyInjection;
 using LiveObjects.Logging;
 using LiveObjects.ModelDescription;
@@ -7,14 +8,21 @@ using LiveObjects.Utils.ExtensionMethods;
 
 namespace LiveObjects.ObjectContext
 {
+    public delegate void LiveObjectPropertyChangedEvent(ObjectContext objectContext, ILiveObject obj, string propertyName);
+
     public class ObjectContext : IObjectContext
     {
         public ILogger Logger = Dependency.Get<ILogger>(false);
         public TypeContext TypeContext { get; protected set; } = TypeContext.Instance;
-        public ConcurrentDictionary<string, IUIObject> ObjectRepository { get; protected set; } = new ConcurrentDictionary<string, IUIObject>(StringComparer.OrdinalIgnoreCase);
+        public ConcurrentDictionary<string, ILiveObject> ObjectRepository { get; protected set; } = new ConcurrentDictionary<string, ILiveObject>(StringComparer.OrdinalIgnoreCase);
 
-        public void PublishObject(IUIObject obj)
+        public bool TrackChanges { get; set; } = true;
+        public event LiveObjectPropertyChangedEvent ObjectPropertyChanged;
+
+        public void PublishObject(ILiveObject obj)
         {
+            TypeContext.GetTypeDescriptor(obj.GetType());
+
             var objId = obj.ResourceId;
             var existingObj = ObjectRepository.GetValueOrDefault(objId);
             //if (existingObj != null && existingObj != obj)
@@ -23,9 +31,10 @@ namespace LiveObjects.ObjectContext
                 Logger.Log($"[Warning] Object's key is not unique: {objId}");
             ObjectRepository[objId] = obj;
 
-            TypeContext.GetTypeDescriptor(obj.GetType());
+            if (TrackChanges && obj is INotifyPropertyChanged)
+                ((INotifyPropertyChanged)obj).PropertyChanged += (sender, args) => ObjectPropertyChanged?.Invoke(this, (ILiveObject) sender, args.PropertyName);
         }
 
-        public IUIObject GetObject(string resourceId) => ObjectRepository.GetValueOrDefault(resourceId ?? "");
+        public ILiveObject GetObject(string resourceId) => ObjectRepository.GetValueOrDefault(resourceId ?? "");
     }
 }

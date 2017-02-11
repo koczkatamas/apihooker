@@ -10,10 +10,23 @@ using Newtonsoft.Json;
 
 namespace LiveObjects.Communication
 {
+    public delegate void ChangeMessageEvent(MessageBridge bridge, Message changeMessage);
+
     public class MessageBridge
     {
         public ILogger Logger { get; } = Dependency.Get<ILogger>(false);
         public ObjectContext.ObjectContext ObjectContext { get; set; } = new ObjectContext.ObjectContext();
+        public event ChangeMessageEvent ChangeMessageEvent;
+
+        public MessageBridge()
+        {
+            ObjectContext.ObjectPropertyChanged += (objContext, liveObj, propName) =>
+            {
+                var objectDesc = (ObjectDescriptor) ObjectContext.TypeContext.GetTypeDescriptor(liveObj.GetType(), false);
+                var newValue = objectDesc.Properties[propName].PropertyInfo.GetValue(liveObj);
+                ChangeMessageEvent?.Invoke(this, new Message { MessageType = MessageType.PropertyChanged, ResourceId = liveObj.ResourceId, Error = MessageError.NoError, PropertyName = propName, Result = newValue });
+            };
+        }
 
         public async Task<Message> ProcessMessageAsync(Message request)
         {

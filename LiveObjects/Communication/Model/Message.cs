@@ -18,6 +18,8 @@ namespace LiveObjects.Communication
 
         public string MethodName { get; set; }
 
+        public string PropertyName { get; set; }
+
         public List<object> Arguments { get; set; }
 
         public object Result { get; set; }

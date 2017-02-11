@@ -19,7 +19,7 @@ namespace LiveObjects.ModelDescription
 
             if (type.IsArray)
                 result = new ArrayDescriptor { TypeInfo = type, ArrayItemType = GetTypeDescriptor(type.GetElementType()) };
-            else if (typeof(IUIObject).IsAssignableFrom(type))
+            else if (typeof(ILiveObject).IsAssignableFrom(type))
             {
                 var objDesc = new ObjectDescriptor { TypeInfo = type };
 

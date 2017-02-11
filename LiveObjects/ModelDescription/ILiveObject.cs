@@ -1,6 +1,6 @@
 namespace LiveObjects.ModelDescription
 {
-    public interface IUIObject
+    public interface ILiveObject
     {
         string ResourceId { get; }
     }

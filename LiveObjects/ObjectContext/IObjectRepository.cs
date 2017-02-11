@@ -4,7 +4,7 @@ namespace LiveObjects.ObjectContext
 {
     public interface IObjectRepository
     {
-        IUIObject GetObject(string resourceId);
-        void PublishObject(IUIObject obj);
+        ILiveObject GetObject(string resourceId);
+        void PublishObject(ILiveObject obj);
     }
 }
