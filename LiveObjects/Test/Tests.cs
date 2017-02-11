@@ -12,10 +12,11 @@ namespace LiveObjects.Test
 {
     public static class Tests
     {
+        public static string TestCaseFolder => AppDomain.CurrentDomain.BaseDirectory.Split(@"LiveObjects\", 2)[0] + @"LiveObjects\Test\TestCases\";
+
         public static string Assert(string name, string value)
         {
-            var baseDir = AppDomain.CurrentDomain.BaseDirectory.Split(@"LiveObjects\", 2)[0];
-            var checkFn = $@"{baseDir}LiveObjects\Test\TestCases\{name}";
+            var checkFn = $@"{TestCaseFolder}\{name}";
             if (File.Exists(checkFn))
             {
                 var good = File.ReadAllText(checkFn);
@@ -42,6 +43,7 @@ namespace LiveObjects.Test
 
         public static void RunTests()
         {
+            Directory.Delete(TestCaseFolder, true);
             Dependency.Register<ILogger>(new ConsoleLogger());
 
             var testObj = new TestObject();
@@ -51,7 +53,8 @@ namespace LiveObjects.Test
 
             Assert("model_testObject", bridge.ObjectContext.TypeContext.TypeDescriptors.Select(x => x.Value));
 
-            var to1 = RunTest(bridge, "to1", new Message { MessageType = MessageType.Call, ResourceId = "testObject", MethodName = "echo" });
+            var to1 = RunTest(bridge, "to1", new Message { MessageType = MessageType.Call, ResourceId = "testObject", MethodName = "echo", Arguments = { "hello" } });
+            var to2 = RunTest(bridge, "to2", new Message { MessageType = MessageType.Call, ResourceId = "testObject", MethodName = "slowEcho", Arguments = { "hello" } });
 
             //var t1 = test("t1", new { messageType = "call", resourceId = "api", methodName = "echo", arguments = new[] { "data" } });
             //var t2 = test("t2", new { messageType = "call", resourceId = "api", methodName = "LaunchAndInject", arguments = new[] { "path" } });

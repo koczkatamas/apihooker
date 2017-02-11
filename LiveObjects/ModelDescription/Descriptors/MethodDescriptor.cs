@@ -12,5 +12,6 @@ namespace LiveObjects.ModelDescription
         public string Name { get; set; }
         public List<MethodParameterDescriptor> Parameters { get; set; } = new List<MethodParameterDescriptor>();
         public TypeDescriptor ResultType { get; set; }
+        public bool Async { get; set; }
     }
 }

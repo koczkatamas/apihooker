@@ -38,11 +38,16 @@ namespace LiveObjects.Communication
                         throw new MessageException(MessageError.ArgumentCountMismatch);
 
                     var parameters = method.Parameters.Select((x, i) => x.Type.Parse(ObjectContext, request.Arguments?[i])).ToArray();
-                    var task = (Task)method.MethodInfo.Invoke(obj, parameters);
-                    await task;
+                    var result = method.MethodInfo.Invoke(obj, parameters);
+                    if (method.Async)
+                    {
+                        var task = (Task) result;
+                        await task;
+                        result = ((dynamic) task).Result;
+                    }
 
                     if (method.ResultType != null)
-                        response.Result = method.ResultType.Serialize(ObjectContext, ((dynamic)task).Result);
+                        response.Result = method.ResultType.Serialize(ObjectContext, result);
 
                     response.Error = MessageError.NoError;
                     response.MessageType = MessageType.CallResponse;

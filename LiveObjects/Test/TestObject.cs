@@ -17,13 +17,13 @@ namespace LiveObjects.Test
         public ObservableCollection<string> List { get; set; }
 
         [Publish]
-        public string Echo(string msg) => msg;
+        public string Echo(string msg) => $"echo response: {msg}";
 
         [Publish]
         public async Task<string> SlowEchoAsync(string msg)
         {
             await Task.Delay(100);
-            return msg;
+            return $"slow echo response: {msg}";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

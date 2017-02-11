@@ -7,5 +7,6 @@ namespace LiveObjects.Utils.ExtensionMethods
         public static string LcFirst(this string str) => String.IsNullOrEmpty(str) ? str : char.ToLower(str[0]) + str.Substring(1);
         public static string[] Split(this string str, string separator) => str.Split(new [] { separator }, StringSplitOptions.None);
         public static string[] Split(this string str, string separator, int count) => str.Split(new[] { separator }, count, StringSplitOptions.None);
+        public static string RemovePostfix(this string str, string postfix) => str.EndsWith(postfix) ? str.Substring(0, str.Length - postfix.Length) : str;
     }
 }

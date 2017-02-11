@@ -1,6 +1,21 @@
 [
   {
     "Methods": {
+      "Echo": {
+        "Name": "Echo",
+        "Parameters": [
+          {
+            "Name": "msg",
+            "Type": {
+              "CsTypeName": "String"
+            }
+          }
+        ],
+        "ResultType": {
+          "CsTypeName": "String"
+        },
+        "Async": false
+      },
       "SlowEcho": {
         "Name": "SlowEcho",
         "Parameters": [
@@ -13,7 +28,8 @@
         ],
         "ResultType": {
           "CsTypeName": "String"
-        }
+        },
+        "Async": true
       }
     },
     "CsTypeName": "TestObject"

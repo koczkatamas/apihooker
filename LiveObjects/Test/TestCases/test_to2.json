@@ -5,5 +5,5 @@
   "ResourceId": null,
   "MethodName": null,
   "Arguments": [],
-  "Result": "echo response: hello"
+  "Result": "slow echo response: hello"
 }

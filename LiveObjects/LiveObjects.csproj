@@ -57,6 +57,7 @@
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="ModelDescription\Attributes\DefaultPublicationMode.cs" />
+    <Compile Include="ModelDescription\Attributes\DoNotPublishAttribute.cs" />
     <Compile Include="ModelDescription\Attributes\PublicationPolicyAttribute.cs" />
     <Compile Include="ObjectContext\IObjectContext.cs" />
     <Compile Include="ObjectContext\IObjectRepository.cs" />
