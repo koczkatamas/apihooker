@@ -25,14 +25,14 @@ namespace ApiHooker
     {
         static void Main(string[] args)
         {
-            var uiApi = new UIApi();
-            var jsonRpc = new JsonRpc();
-            jsonRpc.PublishObject(uiApi);
+            //var uiApi = new UIApi();
+            //var jsonRpc = new JsonRpc();
+            //jsonRpc.PublishObject(uiApi);
+            //
+            //var typeInfos = jsonRpc.TypeInformation;
+            //var typeInfosJson = JsonConvert.SerializeObject(typeInfos.Select(x => x.Value), Formatting.Indented);
 
-            var typeInfos = jsonRpc.TypeInformation;
-            var typeInfosJson = JsonConvert.SerializeObject(typeInfos.Select(x => x.Value), Formatting.Indented);
-
-            JsonRpcTest.TestRpc();
+            //JsonRpcTest.TestRpc();
 
             UIApiAsync(CancellationToken.None);
 
@@ -70,6 +70,7 @@ namespace ApiHooker
                         while (client.IsConnected)
                         {
                             var request = await client.ReadStringAsync(ct);
+                            if (request == null) break;
                             var response = await jsonRpc.ProcessMessageAsync(request);
                             await client.WriteStringAsync(response, ct);
                         }

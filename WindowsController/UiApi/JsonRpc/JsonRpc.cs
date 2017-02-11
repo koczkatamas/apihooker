@@ -52,8 +52,10 @@ namespace ApiHooker.UiApi.JsonRpc
         {
             var objId = obj.ResourceId;
             var existingObj = ObjectRepository.GetValueOrDefault(objId);
+            //if (existingObj != null && existingObj != obj)
+            //    throw new Exception($"Object's key is not unique: {objId}");
             if (existingObj != null && existingObj != obj)
-                throw new Exception($"Object's key is not unique: {objId}");
+                Console.WriteLine($"[Warning] Object's key is not unique: {objId}");
             ObjectRepository[objId] = obj;
 
             GetRpcType(obj.GetType());
