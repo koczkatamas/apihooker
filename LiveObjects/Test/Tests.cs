@@ -125,6 +125,19 @@ namespace LiveObjects.Test
             // Action = Replace, NewStartingIndex = 0, OldStartingIndex = 0, NewItems = ["new value"], OldItems = ["ListItem #2"]
             var to11 = ExpectListChange(bridge, "to11", testObj.List, () => testObj.List[0] = "new value");
 
+            var newListIem = "Pushed Item #0";
+            var to12 = RunTest(bridge, "to12", new Message { MessageType = MessageType.ChangeList, ResourceId = "testObject", PropertyName = "List", ListChanges = new List<ListChangeItem> {
+                new ListChangeItem { Action = ListChangeAction.Add, Index = 0, Value = newListIem } } });
+
+            if (testObj.List[0] != newListIem)
+                throw new Exception("Could not add list item!");
+
+            var to13 = RunTest(bridge, "to13", new Message { MessageType = MessageType.ChangeList, ResourceId = "testObject", PropertyName = "List", ListChanges = new List<ListChangeItem> {
+                new ListChangeItem { Action = ListChangeAction.Remove, Index = 0, Value = newListIem } } });
+
+            if (testObj.List[0] == newListIem)
+                throw new Exception("Could not remove list item!");
+
             //var to7 = RunTest(bridge, "to7", new Message { MessageType = MessageType.ChangeList, ResourceId = "testObject", PropertyName = "List", ListChangeData = new ListChangeData()
             //{
             //    Action = ListChangeAction.Add,

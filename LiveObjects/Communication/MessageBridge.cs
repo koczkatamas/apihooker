@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -65,20 +66,29 @@ namespace LiveObjects.Communication
 
         public async Task<Message> ProcessMessageAsync(Message request)
         {
-            var response = new Message { Error = MessageError.UnexpectedError };
+            var response = new Message { Error = MessageError.UnexpectedError, MessageId = request.MessageId };
 
             try
             {
-                response.MessageId = request.MessageId;
-
-                if (request.MessageType != MessageType.Call && request.MessageType != MessageType.Get && request.MessageType != MessageType.SetProperty)
-                    throw new MessageException(MessageError.UnknownMessageType);
+                if (String.IsNullOrEmpty(request.ResourceId))
+                    throw new MessageException(MessageError.ResourceIdMissing);
 
                 var obj = ObjectContext.GetObject(request.ResourceId);
-                if (obj == null)
-                    throw new MessageException(MessageError.ResourceNotFound);
+                if (obj == null) throw new MessageException(MessageError.ResourceNotFound);
 
                 var typeInfo = (ObjectDescriptor)ObjectContext.TypeContext.GetTypeDescriptor(obj.GetType());
+
+                Func<PropertyDescriptor> getPropDesc = () =>
+                {
+                    if (String.IsNullOrEmpty(request.PropertyName))
+                        throw new MessageException(MessageError.PropertyNameMissing);
+
+                    var propDesc = typeInfo.Properties.GetValueOrDefault(request.PropertyName);
+                    if (propDesc == null)
+                        throw new MessageException(MessageError.PropertyNotFound);
+
+                    return propDesc;
+                };
 
                 if (request.MessageType == MessageType.Call)
                 {
@@ -112,11 +122,31 @@ namespace LiveObjects.Communication
                 }
                 else if (request.MessageType == MessageType.SetProperty)
                 {
-                    var propDesc = typeInfo.Properties.GetValueOrDefault(request.PropertyName);
-                    if (propDesc == null)
-                        throw new MessageException(MessageError.PropertyNotFound);
-
+                    var propDesc = getPropDesc();
                     propDesc.PropertyInfo.SetValue(obj, request.Value);
+
+                    response.Error = MessageError.NoError;
+                    response.MessageType = MessageType.SuccessConfirmation;
+                }
+                else if (request.MessageType == MessageType.ChangeList)
+                {
+                    var propDesc = getPropDesc();
+                    var list = propDesc.PropertyInfo.GetValue(obj) as IList;
+                    if (list == null)
+                        throw new MessageException(MessageError.ListDesynchronized);
+
+                    foreach (var change in request.ListChanges)
+                    {
+                        if (change.Action == ListChangeAction.Add)
+                            list.Insert(change.Index, change.Value);
+                        else if (change.Action == ListChangeAction.Remove)
+                        {
+                            if (!(0 <= change.Index && change.Index < list.Count) || (change.Value != null && !Equals(list[change.Index], change.Value)))
+                                throw new MessageException(MessageError.ListDesynchronized);
+
+                            list.RemoveAt(change.Index);
+                        }
+                    }
 
                     response.Error = MessageError.NoError;
                     response.MessageType = MessageType.SuccessConfirmation;

@@ -30,6 +30,9 @@ namespace LiveObjects.ObjectContext
             var typeDesc = (ObjectDescriptor) TypeContext.GetTypeDescriptor(obj.GetType());
 
             var objId = obj.ResourceId;
+            if(String.IsNullOrEmpty(objId))
+                throw new Exception("Cannot publish a LiveObject with missing ResourceId!");
+
             var existingObj = ObjectRepository.GetValueOrDefault(objId);
             //if (existingObj != null && existingObj != obj)
             //    throw new Exception($"Object's key is not unique: {objId}");
