@@ -107,7 +107,9 @@ namespace LiveObjects.Test
             var to4 = ExpectChange(bridge, "to4", () => testObj.StringProperty = "new StringProperty value");
 
             var newValue = "successful StringProperty change";
-            var to5 = RunTest(bridge, "to5", new Message { MessageType = MessageType.SetProperty, ResourceId = "testObject", PropertyName = "StringProperty", Value = newValue });
+            string to5a = null;
+            var to5b = ExpectChange(bridge, "to5b", () => to5a = RunTest(bridge, "to5a", 
+                new Message { MessageType = MessageType.SetProperty, ResourceId = "testObject", PropertyName = "StringProperty", Value = newValue }));
             if(testObj.StringProperty != newValue)
                 throw new Exception("Could not change property value!");
 

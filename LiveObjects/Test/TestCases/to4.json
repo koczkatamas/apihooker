@@ -3,6 +3,13 @@
     "MessageType": "PropertyChanged",
     "Error": "NoError",
     "ResourceId": "TestObject",
+    "PropertyName": "ComputedProperty",
+    "Value": "new StringProperty value | new StringProperty value"
+  },
+  {
+    "MessageType": "PropertyChanged",
+    "Error": "NoError",
+    "ResourceId": "TestObject",
     "PropertyName": "StringProperty",
     "Value": "new StringProperty value"
   }

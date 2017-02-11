@@ -19,6 +19,9 @@ namespace LiveObjects.Test
         [Publish]
         public string Echo(string msg) => $"echo response: {msg}";
 
+        [Publish]
+        public string ComputedProperty => StringProperty + " | " + StringProperty;
+
         public string SecretProperty { get; set; } = "OhNoIAmASecret!";
 
         [Publish]

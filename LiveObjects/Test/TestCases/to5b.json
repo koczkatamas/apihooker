@@ -1,0 +1,9 @@
+[
+  {
+    "MessageType": "PropertyChanged",
+    "Error": "NoError",
+    "ResourceId": "TestObject",
+    "PropertyName": "ComputedProperty",
+    "Value": "successful StringProperty change | successful StringProperty change"
+  }
+]

@@ -43,6 +43,10 @@
       "List": {
         "Name": "List",
         "CsTypeName": "System.Collections.ObjectModel.ObservableCollection`1[System.String]"
+      },
+      "ComputedProperty": {
+        "Name": "ComputedProperty",
+        "CsTypeName": "System.String"
       }
     },
     "CsTypeName": "TestObject"

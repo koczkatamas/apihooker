@@ -9,6 +9,7 @@
       "ListItem #3",
       "ListItem #4",
       "ListItem #5"
-    ]
+    ],
+    "ComputedProperty": "StringPropertyContent | StringPropertyContent"
   }
 }

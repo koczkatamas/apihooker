@@ -9,11 +9,12 @@ using LiveObjects.DependencyInjection;
 using LiveObjects.Logging;
 using LiveObjects.ModelDescription;
 using LiveObjects.Utils.ExtensionMethods;
+using PropertyDescriptor = LiveObjects.ModelDescription.PropertyDescriptor;
 
 namespace LiveObjects.ObjectContext
 {
     public delegate void LiveObjectPropertyChangedEvent(ObjectContext objectContext, ILiveObject obj, string propertyName);
-    public delegate void ListChangedEvent(ObjectContext objectContext, ILiveObject obj, string propertyName, NotifyCollectionChangedEventArgs eventArgs);
+    public delegate void ListChangedEvent(ObjectContext objectContext, ILiveObject obj, PropertyDescriptor propDesc, NotifyCollectionChangedEventArgs eventArgs);
 
     public class ObjectContext : IObjectContext
     {
@@ -43,16 +44,21 @@ namespace LiveObjects.ObjectContext
             if (TrackChanges)
             {
                 if (obj is INotifyPropertyChanged)
-                    ((INotifyPropertyChanged) obj).PropertyChanged += (sender, args) => ObjectPropertyChanged?.Invoke(this, obj, args.PropertyName);
+                    ((INotifyPropertyChanged)obj).PropertyChanged += OnObjectPropertyChanged;
 
                 foreach (var propDesc in typeDesc.Properties.Values.Where(x => typeof(INotifyCollectionChanged).IsAssignableFrom(x.PropertyInfo.PropertyType)))
                 {
                     var propValue = (INotifyCollectionChanged) propDesc.PropertyInfo.GetValue(obj);
                     if (propValue == null) continue;
 
-                    propValue.CollectionChanged += (sender, args) => ListChanged?.Invoke(this, obj, propDesc.PropertyInfo.Name, args);
+                    propValue.CollectionChanged += (sender, args) => ListChanged?.Invoke(this, obj, propDesc, args);
                 }
             }
+        }
+
+        private void OnObjectPropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            ObjectPropertyChanged?.Invoke(this, (ILiveObject)sender, args.PropertyName);
         }
 
         public ILiveObject GetObject(string resourceId) => ObjectRepository.GetValueOrDefault(resourceId ?? "");

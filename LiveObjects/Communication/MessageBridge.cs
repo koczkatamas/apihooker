@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LiveObjects.DependencyInjection;
 using LiveObjects.Logging;
@@ -20,11 +22,15 @@ namespace LiveObjects.Communication
         public ILogger Logger { get; } = Dependency.Get<ILogger>(false);
         public ObjectContext.ObjectContext ObjectContext { get; set; } = new ObjectContext.ObjectContext();
         public event ChangeMessageEvent ChangeMessageEvent;
+        public bool AllowConcurrentCalls { get; set; }
+        private readonly PropertyChangeSilencer silencedProps = new PropertyChangeSilencer();
 
         public MessageBridge()
         {
             ObjectContext.ObjectPropertyChanged += (objContext, liveObj, propName) =>
             {
+                if (silencedProps.IsSilenced(liveObj, propName)) return;
+
                 var objectDesc = (ObjectDescriptor) ObjectContext.TypeContext.GetTypeDescriptor(liveObj.GetType(), false);
                 var newValue = objectDesc.Properties[propName].PropertyInfo.GetValue(liveObj);
                 ChangeMessageEvent?.Invoke(this, new Message
@@ -37,8 +43,11 @@ namespace LiveObjects.Communication
                 });
             };
 
-            ObjectContext.ListChanged += (objContext, liveObj, propName, changeArgs) =>
+            ObjectContext.ListChanged += (objContext, liveObj, propDesc, changeArgs) =>
             {
+                var propName = propDesc.PropertyInfo.Name;
+                if (silencedProps.IsSilenced(liveObj, propName)) return;
+
                 var isReset = changeArgs.Action == NotifyCollectionChangedAction.Reset;
                 var changeMsg = new Message
                 {
@@ -64,9 +73,15 @@ namespace LiveObjects.Communication
             };
         }
 
+        private readonly SemaphoreSlim processMessageLock = new SemaphoreSlim(1);
+
         public async Task<Message> ProcessMessageAsync(Message request)
         {
             var response = new Message { Error = MessageError.UnexpectedError, MessageId = request.MessageId };
+
+            var locked = !AllowConcurrentCalls;
+            if (locked)
+                await processMessageLock.WaitAsync();
 
             try
             {
@@ -74,9 +89,10 @@ namespace LiveObjects.Communication
                     throw new MessageException(MessageError.ResourceIdMissing);
 
                 var obj = ObjectContext.GetObject(request.ResourceId);
-                if (obj == null) throw new MessageException(MessageError.ResourceNotFound);
+                if (obj == null)
+                    throw new MessageException(MessageError.ResourceNotFound);
 
-                var typeInfo = (ObjectDescriptor)ObjectContext.TypeContext.GetTypeDescriptor(obj.GetType());
+                var typeInfo = (ObjectDescriptor) ObjectContext.TypeContext.GetTypeDescriptor(obj.GetType());
 
                 Func<PropertyDescriptor> getPropDesc = () =>
                 {
@@ -123,7 +139,8 @@ namespace LiveObjects.Communication
                 else if (request.MessageType == MessageType.SetProperty)
                 {
                     var propDesc = getPropDesc();
-                    propDesc.PropertyInfo.SetValue(obj, request.Value);
+                    using (silencedProps.SilenceThis(obj, propDesc))
+                        propDesc.PropertyInfo.SetValue(obj, request.Value);
 
                     response.Error = MessageError.NoError;
                     response.MessageType = MessageType.SuccessConfirmation;
@@ -135,16 +152,19 @@ namespace LiveObjects.Communication
                     if (list == null)
                         throw new MessageException(MessageError.ListDesynchronized);
 
-                    foreach (var change in request.ListChanges)
+                    using (silencedProps.SilenceThis(obj, propDesc))
                     {
-                        if (change.Action == ListChangeAction.Add)
-                            list.Insert(change.Index, change.Value);
-                        else if (change.Action == ListChangeAction.Remove)
+                        foreach (var change in request.ListChanges)
                         {
-                            if (!(0 <= change.Index && change.Index < list.Count) || (change.Value != null && !Equals(list[change.Index], change.Value)))
-                                throw new MessageException(MessageError.ListDesynchronized);
+                            if (change.Action == ListChangeAction.Add)
+                                list.Insert(change.Index, change.Value);
+                            else if (change.Action == ListChangeAction.Remove)
+                            {
+                                if (!(0 <= change.Index && change.Index < list.Count) || (change.Value != null && !Equals(list[change.Index], change.Value)))
+                                    throw new MessageException(MessageError.ListDesynchronized);
 
-                            list.RemoveAt(change.Index);
+                                list.RemoveAt(change.Index);
+                            }
                         }
                     }
 
@@ -161,6 +181,11 @@ namespace LiveObjects.Communication
             catch (Exception e)
             {
                 Logger?.LogException(new Exception("Unexpected error while processing LiveObject request message", e));
+            }
+            finally
+            {
+                if (locked)
+                    processMessageLock.Release();
             }
 
             return response;

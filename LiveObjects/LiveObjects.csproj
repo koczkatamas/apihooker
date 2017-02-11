@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Communication\Model\ListChangeAction.cs" />
     <Compile Include="Communication\Model\ListChangeItem.cs" />
+    <Compile Include="Communication\Helpers\PropertyChangeSilencer.cs" />
     <Compile Include="DependencyInjection\Dependency.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />
