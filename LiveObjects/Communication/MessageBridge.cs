@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using LiveObjects.DependencyInjection;
 using LiveObjects.Logging;
 using LiveObjects.ModelDescription;
+using LiveObjects.ModelDescription.Helpers;
 using LiveObjects.Utils.ExtensionMethods;
 using Newtonsoft.Json;
 
@@ -22,14 +23,17 @@ namespace LiveObjects.Communication
             {
                 response.MessageId = request.MessageId;
 
+                if (request.MessageType != MessageType.Call && request.MessageType != MessageType.Get)
+                    throw new MessageException(MessageError.UnknownMessageType);
+
+                var obj = ObjectContext.GetObject(request.ResourceId);
+                if (obj == null)
+                    throw new MessageException(MessageError.ResourceNotFound);
+
+                var typeInfo = (ObjectDescriptor)ObjectContext.TypeContext.GetTypeDescriptor(obj.GetType());
+
                 if (request.MessageType == MessageType.Call)
                 {
-                    var obj = ObjectContext.GetObject(request.ResourceId);
-                    if (obj == null)
-                        throw new MessageException(MessageError.ResourceNotFound);
-
-                    var typeInfo = (ObjectDescriptor)ObjectContext.TypeContext.GetTypeDescriptor(obj.GetType());
-
                     var method = typeInfo.Methods.GetValueOrDefault(request.MethodName);
                     if (method == null)
                         throw new MessageException(MessageError.MethodNotFound);
@@ -51,6 +55,12 @@ namespace LiveObjects.Communication
 
                     response.Error = MessageError.NoError;
                     response.MessageType = MessageType.CallResponse;
+                }
+                else if (request.MessageType == MessageType.Get)
+                {
+                    response.Error = MessageError.NoError;
+                    response.MessageType = MessageType.GetResponse;
+                    response.Result = obj;
                 }
                 else
                     throw new MessageException(MessageError.UnknownMessageType);
@@ -83,7 +93,11 @@ namespace LiveObjects.Communication
             if(requestObj != null)
                 responseObj = await ProcessMessageAsync(requestObj);
 
-            return JsonConvert.SerializeObject(responseObj, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            return JsonConvert.SerializeObject(responseObj, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new LiveObjectResolver(ObjectContext.TypeContext)
+            });
         }
     }
 }

@@ -1,0 +1,15 @@
+{
+  "MessageType": "GetResponse",
+  "Error": "NoError",
+  "MessageId": null,
+  "ResourceId": null,
+  "MethodName": null,
+  "Arguments": [],
+  "Result": {
+    "StringProperty": "StringPropertyContent",
+    "List": [
+      "ListItem #1",
+      "ListItem #2"
+    ]
+  }
+}

@@ -32,6 +32,16 @@
         "Async": true
       }
     },
+    "Properties": {
+      "StringProperty": {
+        "Name": "StringProperty",
+        "CsTypeName": "System.String"
+      },
+      "List": {
+        "Name": "List",
+        "CsTypeName": "System.Collections.ObjectModel.ObservableCollection`1[System.String]"
+      }
+    },
     "CsTypeName": "TestObject"
   },
   {

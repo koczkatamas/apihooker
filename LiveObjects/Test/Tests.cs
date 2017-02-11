@@ -37,7 +37,7 @@ namespace LiveObjects.Test
 
         public static string RunTest(MessageBridge bridge, string name, Message request)
         {
-            var result = bridge.ProcessMessageAsync(request).Result;
+            var result = JsonConvert.DeserializeObject<Message>(bridge.ProcessMessageAsync(JsonConvert.SerializeObject(request)).Result);
             return Assert($"test_{name}", result);
         }
 
@@ -55,6 +55,7 @@ namespace LiveObjects.Test
 
             var to1 = RunTest(bridge, "to1", new Message { MessageType = MessageType.Call, ResourceId = "testObject", MethodName = "echo", Arguments = { "hello" } });
             var to2 = RunTest(bridge, "to2", new Message { MessageType = MessageType.Call, ResourceId = "testObject", MethodName = "slowEcho", Arguments = { "hello" } });
+            var to3 = RunTest(bridge, "to3", new Message { MessageType = MessageType.Get, ResourceId = "testObject" });
 
             //var t1 = test("t1", new { messageType = "call", resourceId = "api", methodName = "echo", arguments = new[] { "data" } });
             //var t2 = test("t2", new { messageType = "call", resourceId = "api", methodName = "LaunchAndInject", arguments = new[] { "path" } });

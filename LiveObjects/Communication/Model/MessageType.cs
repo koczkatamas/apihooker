@@ -1,4 +1,4 @@
 namespace LiveObjects.Communication
 {
-    public enum MessageType { Error, Call, CallResponse }
+    public enum MessageType { Error, Call, CallResponse, Get, GetResponse }
 }

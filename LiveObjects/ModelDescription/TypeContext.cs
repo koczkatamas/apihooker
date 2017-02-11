@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -25,11 +24,10 @@ namespace LiveObjects.ModelDescription
                 var objDesc = new ObjectDescriptor { TypeInfo = type };
 
                 var optOut = type.GetCustomAttribute<PublicationPolicyAttribute>()?.DefaultPublicationMode == DefaultPublicationMode.OptOut;
-                foreach (var methodInfo in type.GetMethods())
-                {
-                    var include = optOut ? methodInfo.GetCustomAttribute<DoNotPublishAttribute>() == null : methodInfo.GetCustomAttribute<PublishAttribute>() != null;
-                    if (!include) continue;
+                Func<MemberInfo, bool> publish = mi => optOut ? mi.GetCustomAttribute<DoNotPublishAttribute>() == null : mi.GetCustomAttribute<PublishAttribute>() != null;
 
+                foreach (var methodInfo in type.GetMethods().Where(x => publish(x)))
+                {
                     var isAsync = typeof(Task).IsAssignableFrom(methodInfo.ReturnType);
                     var name = isAsync ? methodInfo.Name.RemovePostfix("Async") : methodInfo.Name;
 
@@ -53,6 +51,12 @@ namespace LiveObjects.ModelDescription
                     objDesc.Methods[methodDesc.Name] = methodDesc;
                 }
 
+                foreach (var propertyInfo in type.GetProperties().Where(x => publish(x)))
+                {
+                    var propDesc = new PropertyDescriptor { PropertyInfo = propertyInfo };
+                    objDesc.Properties[propertyInfo.Name] = propDesc;
+                }
+
                 result = objDesc;
             }
             else
@@ -61,12 +65,12 @@ namespace LiveObjects.ModelDescription
             return result;
         }
 
-        public TypeDescriptor GetTypeDescriptor(Type type)
+        public TypeDescriptor GetTypeDescriptor(Type type, bool createIfNotExists = true)
         {
             TypeDescriptor result;
 
-            if (!TypeDescriptors.TryGetValue(type, out result))
-                result = TypeDescriptors[type] = CreateTypeDescriptor(type);
+            if (!TypeDescriptors.TryGetValue(type, out result) && createIfNotExists)
+                    result = TypeDescriptors[type] = CreateTypeDescriptor(type);
 
             return result;
         }
