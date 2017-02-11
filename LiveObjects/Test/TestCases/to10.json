@@ -5,11 +5,14 @@
     "ResourceId": "TestObject",
     "PropertyName": "List",
     "ListChangeData": {
-      "Action": "Remove",
-      "NewStartingIndex": -1,
+      "Action": "Replace",
+      "NewStartingIndex": 0,
       "OldStartingIndex": 0,
+      "NewItems": [
+        "new value"
+      ],
       "OldItems": [
-        "ListItem #1"
+        "ListItem #2"
       ]
     }
   }

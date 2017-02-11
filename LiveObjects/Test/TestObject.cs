@@ -14,7 +14,7 @@ namespace LiveObjects.Test
         public string StringProperty { get; set; } = "StringPropertyContent";
 
         [Publish]
-        public ObservableCollection<string> List { get; set; } = new ObservableCollection<string> { "ListItem #1", "ListItem #2" };
+        public ObservableCollection<string> List { get; set; } = new ObservableCollection<string> { "ListItem #1", "ListItem #2", "ListItem #3", "ListItem #4", "ListItem #5" };
 
         [Publish]
         public string Echo(string msg) => $"echo response: {msg}";

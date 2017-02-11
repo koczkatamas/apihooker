@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using LiveObjects.Communication;
@@ -76,7 +77,22 @@ namespace LiveObjects.Test
             if(testObj.StringProperty != newValue)
                 throw new Exception("Could not change property value!");
 
-            var to6 = ExpectChange(bridge, "to6", () => testObj.List.RemoveAt(1));
+            // Action = Remove, NewStartingIndex = -1, OldStartingIndex = 0, OldItems = ["ListItem #1"]
+            var to6 = ExpectChange(bridge, "to6", () => testObj.List.RemoveAt(0));
+            // Action = Add, NewStartingIndex = 0, OldStartingIndex = -1, NewItems = ["inserted item #0"]
+            var to7 = ExpectChange(bridge, "to7", () => testObj.List.Insert(0, "inserted item #0"));
+            // Action = Add, NewStartingIndex = 5, OldStartingIndex = -1, NewItems = ["added item"]
+            var to8 = ExpectChange(bridge, "to8", () => testObj.List.Add("added item"));
+            // Action = Move, NewStartingIndex = 1, OldStartingIndex = 0, NewItems = ["inserted item #0"], OldItems = ["inserted item #0"]
+            var to9 = ExpectChange(bridge, "to9", () => testObj.List.Move(0, 1));
+            // Action = Replace, NewStartingIndex = 0, OldStartingIndex = 0, NewItems = ["new value"], OldItems = ["ListItem #2"]
+            var to10 = ExpectChange(bridge, "to10", () => testObj.List[0] = "new value");
+
+            //var to7 = RunTest(bridge, "to7", new Message { MessageType = MessageType.ChangeList, ResourceId = "testObject", PropertyName = "List", ListChangeData = new ListChangeData()
+            //{
+            //    Action = ListChangeAction.Add,
+            //    NewItems = 
+            //} });
 
             //var t1 = test("t1", new { messageType = "call", resourceId = "api", methodName = "echo", arguments = new[] { "data" } });
             //var t2 = test("t2", new { messageType = "call", resourceId = "api", methodName = "LaunchAndInject", arguments = new[] { "path" } });
