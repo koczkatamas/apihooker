@@ -1,9 +1,5 @@
 {
   "MessageType": "CallResponse",
   "Error": "NoError",
-  "MessageId": null,
-  "ResourceId": null,
-  "MethodName": null,
-  "Arguments": [],
   "Result": "echo response: hello"
 }
