@@ -24,7 +24,14 @@ namespace LiveObjects.Communication
             {
                 var objectDesc = (ObjectDescriptor) ObjectContext.TypeContext.GetTypeDescriptor(liveObj.GetType(), false);
                 var newValue = objectDesc.Properties[propName].PropertyInfo.GetValue(liveObj);
-                ChangeMessageEvent?.Invoke(this, new Message { MessageType = MessageType.PropertyChanged, ResourceId = liveObj.ResourceId, Error = MessageError.NoError, PropertyName = propName, Result = newValue });
+                ChangeMessageEvent?.Invoke(this, new Message
+                {
+                    Error = MessageError.NoError,
+                    MessageType = MessageType.PropertyChanged,
+                    ResourceId = liveObj.ResourceId,
+                    PropertyName = propName,
+                    Value = newValue
+                });
             };
         }
 
@@ -36,7 +43,7 @@ namespace LiveObjects.Communication
             {
                 response.MessageId = request.MessageId;
 
-                if (request.MessageType != MessageType.Call && request.MessageType != MessageType.Get)
+                if (request.MessageType != MessageType.Call && request.MessageType != MessageType.Get && request.MessageType != MessageType.SetProperty)
                     throw new MessageException(MessageError.UnknownMessageType);
 
                 var obj = ObjectContext.GetObject(request.ResourceId);
@@ -64,7 +71,7 @@ namespace LiveObjects.Communication
                     }
 
                     if (method.ResultType != null)
-                        response.Result = method.ResultType.Serialize(ObjectContext, result);
+                        response.Value = method.ResultType.Serialize(ObjectContext, result);
 
                     response.Error = MessageError.NoError;
                     response.MessageType = MessageType.CallResponse;
@@ -73,7 +80,18 @@ namespace LiveObjects.Communication
                 {
                     response.Error = MessageError.NoError;
                     response.MessageType = MessageType.GetResponse;
-                    response.Result = obj;
+                    response.Value = obj;
+                }
+                else if (request.MessageType == MessageType.SetProperty)
+                {
+                    var propDesc = typeInfo.Properties.GetValueOrDefault(request.PropertyName);
+                    if (propDesc == null)
+                        throw new MessageException(MessageError.PropertyNotFound);
+
+                    propDesc.PropertyInfo.SetValue(obj, request.Value);
+
+                    response.Error = MessageError.NoError;
+                    response.MessageType = MessageType.SuccessConfirmation;
                 }
                 else
                     throw new MessageException(MessageError.UnknownMessageType);

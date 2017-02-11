@@ -1,7 +1,7 @@
 {
   "MessageType": "GetResponse",
   "Error": "NoError",
-  "Result": {
+  "Value": {
     "StringProperty": "StringPropertyContent",
     "List": [
       "ListItem #1",

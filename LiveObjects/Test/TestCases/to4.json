@@ -7,6 +7,6 @@
     "MethodName": null,
     "PropertyName": "StringProperty",
     "Arguments": null,
-    "Result": "new StringProperty value"
+    "Value": "new StringProperty value"
   }
 ]

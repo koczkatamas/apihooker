@@ -22,7 +22,7 @@ namespace LiveObjects.Communication
 
         public List<object> Arguments { get; set; }
 
-        public object Result { get; set; }
+        public object Value { get; set; }
 
         public static Message CreateError(MessageError error) => new Message { MessageType = MessageType.Error, Error = error };
     }

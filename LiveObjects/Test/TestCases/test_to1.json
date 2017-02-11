@@ -1,5 +1,5 @@
 {
   "MessageType": "CallResponse",
   "Error": "NoError",
-  "Result": "echo response: hello"
+  "Value": "echo response: hello"
 }

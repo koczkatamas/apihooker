@@ -71,6 +71,11 @@ namespace LiveObjects.Test
             var to3 = RunTest(bridge, "to3", new Message { MessageType = MessageType.Get, ResourceId = "testObject" });
             var to4 = ExpectChange(bridge, "to4", () => testObj.StringProperty = "new StringProperty value");
 
+            var newValue = "successful StringProperty change";
+            var to5 = RunTest(bridge, "to5", new Message { MessageType = MessageType.SetProperty, ResourceId = "testObject", PropertyName = "StringProperty", Value = newValue });
+            if(testObj.StringProperty != newValue)
+                throw new Exception("Could not change property value!");
+
             //var t1 = test("t1", new { messageType = "call", resourceId = "api", methodName = "echo", arguments = new[] { "data" } });
             //var t2 = test("t2", new { messageType = "call", resourceId = "api", methodName = "LaunchAndInject", arguments = new[] { "path" } });
             //var t3 = test("t3", new { messageType = "call", resourceId = "process/path", methodName = "ResumeMainThread" });
