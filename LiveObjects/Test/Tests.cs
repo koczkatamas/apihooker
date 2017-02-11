@@ -32,7 +32,7 @@ namespace LiveObjects.Test
 
         public static string Assert(string testName, object value)
         {
-            var result = JsonConvert.SerializeObject(value, Formatting.Indented);
+            var result = JsonConvert.SerializeObject(value, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             return Assert($"{testName}.json", result);
         }
 
@@ -75,6 +75,8 @@ namespace LiveObjects.Test
             var to5 = RunTest(bridge, "to5", new Message { MessageType = MessageType.SetProperty, ResourceId = "testObject", PropertyName = "StringProperty", Value = newValue });
             if(testObj.StringProperty != newValue)
                 throw new Exception("Could not change property value!");
+
+            var to6 = ExpectChange(bridge, "to6", () => testObj.List.RemoveAt(1));
 
             //var t1 = test("t1", new { messageType = "call", resourceId = "api", methodName = "echo", arguments = new[] { "data" } });
             //var t2 = test("t2", new { messageType = "call", resourceId = "api", methodName = "LaunchAndInject", arguments = new[] { "path" } });

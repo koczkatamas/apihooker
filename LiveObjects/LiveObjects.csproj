@@ -53,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\Model\ListChangeAction.cs" />
+    <Compile Include="Communication\Model\ListChangeData.cs" />
     <Compile Include="DependencyInjection\Dependency.cs" />
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\ILogger.cs" />

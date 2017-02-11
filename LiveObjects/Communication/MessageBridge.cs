@@ -33,6 +33,18 @@ namespace LiveObjects.Communication
                     Value = newValue
                 });
             };
+
+            ObjectContext.ListChanged += (objContext, liveObj, propName, listChangeData) =>
+            {
+                ChangeMessageEvent?.Invoke(this, new Message
+                {
+                    Error = MessageError.NoError,
+                    MessageType = MessageType.ListChanged,
+                    ResourceId = liveObj.ResourceId,
+                    PropertyName = propName,
+                    ListChangeData = listChangeData
+                });
+            };
         }
 
         public async Task<Message> ProcessMessageAsync(Message request)

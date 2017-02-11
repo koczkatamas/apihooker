@@ -1,0 +1,16 @@
+[
+  {
+    "MessageType": "ListChanged",
+    "Error": "NoError",
+    "ResourceId": "TestObject",
+    "PropertyName": "List",
+    "ListChangeData": {
+      "Action": "Remove",
+      "NewStartingIndex": -1,
+      "OldStartingIndex": 1,
+      "OldItems": [
+        "ListItem #2"
+      ]
+    }
+  }
+]
