@@ -1,0 +1,9 @@
+{
+  "MessageType": "Error",
+  "Error": "MethodNotFound",
+  "MessageId": null,
+  "ResourceId": null,
+  "MethodName": null,
+  "Arguments": [],
+  "Result": null
+}
