@@ -4,14 +4,12 @@ using Newtonsoft.Json.Converters;
 
 namespace LiveObjects.Communication
 {
-    public class ListChangeData
+    public class ListChangeItem
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public ListChangeAction Action { get; set; }
 
-        public int NewStartingIndex { get; set; }
-        public int OldStartingIndex { get; set; }
-        public IList NewItems { get; set; }
-        public IList OldItems { get; set; }
+        public int Index { get; set; }
+        public object Value { get; set; }
     }
 }

@@ -4,16 +4,17 @@
     "Error": "NoError",
     "ResourceId": "TestObject",
     "PropertyName": "List",
-    "ListChangeData": {
-      "Action": "Replace",
-      "NewStartingIndex": 0,
-      "OldStartingIndex": 0,
-      "NewItems": [
-        "new value"
-      ],
-      "OldItems": [
-        "ListItem #2"
-      ]
-    }
+    "ListChanges": [
+      {
+        "Action": "Remove",
+        "Index": 2,
+        "Value": "ListItem #3"
+      },
+      {
+        "Action": "Add",
+        "Index": 0,
+        "Value": "ListItem #3"
+      }
+    ]
   }
 ]

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using LiveObjects.DependencyInjection;
@@ -34,16 +36,30 @@ namespace LiveObjects.Communication
                 });
             };
 
-            ObjectContext.ListChanged += (objContext, liveObj, propName, listChangeData) =>
+            ObjectContext.ListChanged += (objContext, liveObj, propName, changeArgs) =>
             {
-                ChangeMessageEvent?.Invoke(this, new Message
+                var isReset = changeArgs.Action == NotifyCollectionChangedAction.Reset;
+                var changeMsg = new Message
                 {
                     Error = MessageError.NoError,
-                    MessageType = MessageType.ListChanged,
+                    MessageType = isReset ? MessageType.PropertyChanged : MessageType.ListChanged,
                     ResourceId = liveObj.ResourceId,
                     PropertyName = propName,
-                    ListChangeData = listChangeData
-                });
+                    ListChanges = isReset ? null : new List<ListChangeItem>()
+                };
+
+                // Action = Add,     NewStartingIndex =  0, OldStartingIndex = -1, NewItems = ["inserted item #0"]
+                // Action = Add,     NewStartingIndex =  5, OldStartingIndex = -1, NewItems = ["added item"]
+                // Action = Remove,  NewStartingIndex = -1, OldStartingIndex =  0, NewItems = null,                 OldItems = ["ListItem #1"]
+                // Action = Move,    NewStartingIndex =  1, OldStartingIndex =  0, NewItems = ["inserted item #0"], OldItems = ["inserted item #0"]
+                // Action = Replace, NewStartingIndex =  0, OldStartingIndex =  0, NewItems = ["new value"],        OldItems = ["ListItem #2"]
+                for (var i = 0; i < changeArgs.OldItems?.Count; i++)
+                    changeMsg.ListChanges.Add(new ListChangeItem { Action = ListChangeAction.Remove, Index = changeArgs.OldStartingIndex, Value = changeArgs.OldItems[i] });
+
+                for(var i = 0; i < changeArgs.NewItems?.Count; i++)
+                    changeMsg.ListChanges.Add(new ListChangeItem { Action = ListChangeAction.Add, Index = changeArgs.NewStartingIndex + i, Value = changeArgs.NewItems[i] });
+
+                ChangeMessageEvent?.Invoke(this, changeMsg);
             };
         }
 

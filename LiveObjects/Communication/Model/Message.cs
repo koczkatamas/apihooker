@@ -24,7 +24,7 @@ namespace LiveObjects.Communication
 
         public object Value { get; set; }
 
-        public ListChangeData ListChangeData { get; set; }
+        public List<ListChangeItem> ListChanges { get; set; }
 
         public static Message CreateError(MessageError error) => new Message { MessageType = MessageType.Error, Error = error };
     }

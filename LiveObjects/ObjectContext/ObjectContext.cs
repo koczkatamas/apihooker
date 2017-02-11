@@ -13,7 +13,7 @@ using LiveObjects.Utils.ExtensionMethods;
 namespace LiveObjects.ObjectContext
 {
     public delegate void LiveObjectPropertyChangedEvent(ObjectContext objectContext, ILiveObject obj, string propertyName);
-    public delegate void ListChangedEvent(ObjectContext objectContext, ILiveObject obj, string propertyName, ListChangeData changeData);
+    public delegate void ListChangedEvent(ObjectContext objectContext, ILiveObject obj, string propertyName, NotifyCollectionChangedEventArgs eventArgs);
 
     public class ObjectContext : IObjectContext
     {
@@ -47,14 +47,7 @@ namespace LiveObjects.ObjectContext
                     var propValue = (INotifyCollectionChanged) propDesc.PropertyInfo.GetValue(obj);
                     if (propValue == null) continue;
 
-                    propValue.CollectionChanged += (sender, args) => ListChanged?.Invoke(this, obj, propDesc.PropertyInfo.Name, new ListChangeData
-                    {
-                        Action = (ListChangeAction) args.Action,
-                        NewStartingIndex = args.NewStartingIndex,
-                        OldStartingIndex = args.OldStartingIndex,
-                        NewItems = args.NewItems,
-                        OldItems = args.OldItems
-                    });
+                    propValue.CollectionChanged += (sender, args) => ListChanged?.Invoke(this, obj, propDesc.PropertyInfo.Name, args);
                 }
             }
         }

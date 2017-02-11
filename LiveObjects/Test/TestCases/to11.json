@@ -8,12 +8,12 @@
       {
         "Action": "Remove",
         "Index": 0,
-        "Value": "inserted item #0"
+        "Value": "ListItem #3"
       },
       {
         "Action": "Add",
-        "Index": 1,
-        "Value": "inserted item #0"
+        "Index": 0,
+        "Value": "new value"
       }
     ]
   }

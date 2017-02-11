@@ -4,13 +4,12 @@
     "Error": "NoError",
     "ResourceId": "TestObject",
     "PropertyName": "List",
-    "ListChangeData": {
-      "Action": "Add",
-      "NewStartingIndex": 5,
-      "OldStartingIndex": -1,
-      "NewItems": [
-        "added item"
-      ]
-    }
+    "ListChanges": [
+      {
+        "Action": "Add",
+        "Index": 5,
+        "Value": "added item"
+      }
+    ]
   }
 ]

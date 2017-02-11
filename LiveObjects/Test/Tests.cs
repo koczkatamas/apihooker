@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -43,7 +44,7 @@ namespace LiveObjects.Test
             return Assert($"test_{testName}", result);
         }
 
-        public static string ExpectChange(MessageBridge bridge, string testName, Action localAction)
+        public static Message[] GetChanges(MessageBridge bridge, Action localAction)
         {
             var changes = new List<Message>();
 
@@ -51,6 +52,39 @@ namespace LiveObjects.Test
             bridge.ChangeMessageEvent += chEvent;
             localAction();
             bridge.ChangeMessageEvent -= chEvent;
+
+            return changes.ToArray();
+        }
+
+        public static string ExpectChange(MessageBridge bridge, string testName, Action localAction)
+        {
+            var changes = GetChanges(bridge, localAction);
+            return Assert(testName, changes);
+        }
+
+        public static string ExpectListChange(MessageBridge bridge, string testName, IEnumerable list, Action localAction)
+        {
+            var originalList = list.Cast<object>().ToList();
+            var changes = GetChanges(bridge, localAction);
+            var newList = list.Cast<object>().ToArray();
+
+            // simulate changes...
+            var shadowList = originalList.ToList();
+            foreach (var change in changes.Where(x => x.ListChanges != null).SelectMany(x => x.ListChanges))
+            {
+                if(change.Action == ListChangeAction.Add)
+                    shadowList.Insert(change.Index, change.Value);
+                else if (change.Action == ListChangeAction.Remove)
+                {
+                    if(shadowList[change.Index] != change.Value)
+                        throw new Exception("Removed item does not match!");
+
+                    shadowList.RemoveAt(change.Index);
+                }
+            }
+
+            if(!newList.SequenceEqual(shadowList))
+                throw new Exception("List change events do not match!");
 
             return Assert(testName, changes);
         }
@@ -78,15 +112,18 @@ namespace LiveObjects.Test
                 throw new Exception("Could not change property value!");
 
             // Action = Remove, NewStartingIndex = -1, OldStartingIndex = 0, OldItems = ["ListItem #1"]
-            var to6 = ExpectChange(bridge, "to6", () => testObj.List.RemoveAt(0));
+            var to6 = ExpectListChange(bridge, "to6", testObj.List, () => testObj.List.RemoveAt(0));
             // Action = Add, NewStartingIndex = 0, OldStartingIndex = -1, NewItems = ["inserted item #0"]
-            var to7 = ExpectChange(bridge, "to7", () => testObj.List.Insert(0, "inserted item #0"));
+            var to7 = ExpectListChange(bridge, "to7", testObj.List, () => testObj.List.Insert(0, "inserted item #0"));
             // Action = Add, NewStartingIndex = 5, OldStartingIndex = -1, NewItems = ["added item"]
-            var to8 = ExpectChange(bridge, "to8", () => testObj.List.Add("added item"));
+            var to8 = ExpectListChange(bridge, "to8", testObj.List, () => testObj.List.Add("added item"));
+
             // Action = Move, NewStartingIndex = 1, OldStartingIndex = 0, NewItems = ["inserted item #0"], OldItems = ["inserted item #0"]
-            var to9 = ExpectChange(bridge, "to9", () => testObj.List.Move(0, 1));
+            var to9 = ExpectListChange(bridge, "to9", testObj.List, () => testObj.List.Move(0, 1));
+            var to10 = ExpectListChange(bridge, "to10", testObj.List, () => testObj.List.Move(2, 0));
+            
             // Action = Replace, NewStartingIndex = 0, OldStartingIndex = 0, NewItems = ["new value"], OldItems = ["ListItem #2"]
-            var to10 = ExpectChange(bridge, "to10", () => testObj.List[0] = "new value");
+            var to11 = ExpectListChange(bridge, "to11", testObj.List, () => testObj.List[0] = "new value");
 
             //var to7 = RunTest(bridge, "to7", new Message { MessageType = MessageType.ChangeList, ResourceId = "testObject", PropertyName = "List", ListChangeData = new ListChangeData()
             //{
