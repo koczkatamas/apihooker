@@ -24,19 +24,26 @@
   <ItemGroup>
     <Content Include="css\app.css" />
     <Content Include="index.html" />
-    <Content Include="web.config" />
+    <Content Include="lib\knockout\knockout-3.4.1.js" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\typings\knockout.es5\knockout.es5.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\knockout\knockout.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\knockout\tests\jasmine.extensions.d.ts" />
     <TypeScriptCompile Include="src\app.ts" />
+    <TypeScriptCompile Include="src\JsonRpc.ts" />
+    <TypeScriptCompile Include="src\ObjectHelper.ts" />
+    <TypeScriptCompile Include="src\RpcMessage.ts" />
+    <TypeScriptCompile Include="src\UIApi.ts" />
+    <TypeScriptCompile Include="src\UIHookableMethod.ts" />
+    <TypeScriptCompile Include="src\UIObject.ts" />
+    <TypeScriptCompile Include="src\WebSocketHandler.ts" />
+    <TypeScriptCompile Include="src\require-config.ts" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="web.Debug.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
-    <None Include="web.Release.config">
-      <DependentUpon>web.config</DependentUpon>
-    </None>
+    <Content Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>

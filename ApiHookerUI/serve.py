@@ -11,6 +11,7 @@ import time
 import subprocess
 import re
 import fnmatch
+from BaseHTTPServer import HTTPServer
 
 PORT = 8000
 watchDirs = ['index.html', 'js/', 'css/']
@@ -126,4 +127,8 @@ if '--compile' in sys.argv:
     print "auto compile started"
 
 print "please use 127.0.0.1:%d on Windows (using localhost makes 1sec delay)" % PORT
-SocketServer.TCPServer(("", PORT), MyHandler).serve_forever()
+
+class ThreadingServer(SocketServer.ThreadingMixIn, HTTPServer):
+    pass
+
+ThreadingServer(("", PORT), MyHandler).serve_forever()

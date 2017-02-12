@@ -61,7 +61,7 @@ namespace ApiHooker
 
                     try
                     {
-                        if (client.HttpRequest.Headers["Origin"] != "http://localhost:8000")
+                        if (client.HttpRequest.Headers["Origin"] != "http://127.0.0.1:8000")
                         {
                             await client.WriteStringAsync(@"{ ""Error"": ""NotAllowedOrigin"" }", ct);
                             client.Close();
