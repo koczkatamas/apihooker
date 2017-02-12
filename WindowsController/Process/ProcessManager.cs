@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using ApiHooker.Utils;
 
 namespace ApiHooker
 {
@@ -25,6 +26,7 @@ namespace ApiHooker
 
         public static ProcessManager LaunchSuspended(string exePath, string arguments = "", string workingDirectory = null)
         {
+            exePath = FileUtils.GetFullPath(exePath);
             var commandLine = exePath + (String.IsNullOrEmpty(arguments) ? "" : " " + arguments);
             workingDirectory = workingDirectory ?? Environment.CurrentDirectory;
 

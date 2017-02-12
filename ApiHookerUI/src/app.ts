@@ -3,15 +3,34 @@ import * as ko from "knockout";
 import "knockout-es5";
 
 import WebSocketHandler from "./WebSocketHandler";
-import UIApi from "./UIApi";
-import JsonRpc from "./JsonRpc";
+import UIApi from "./RemoteModel/UIApi";
+import { JsonRpc, UIObject } from "./JsonRpc";
+
+var rpc = new JsonRpc(null);
+var uiApi = new UIApi(rpc, "api");
+ko.track(uiApi);
+ko.applyBindings(uiApi, document.getElementById("uiApi"));
 
 var ws = new WebSocketHandler("ws://127.0.0.1:1338/");
 ws.onConnected = socket => {
-    var rpc = new JsonRpc(socket);
-    var api = new UIApi(rpc, "api");
+    rpc.setSocket(socket);
+    rpc.refreshObject(uiApi);
+    //var api = new UIApi(rpc, "api");
+    //rpc.refreshObject(api).then(() => {
+    //    console.log('api.hookableMethods', api.hookableMethods);
+    //});
+
+    //var uiApi = rpc.createFrom(UIApi, {
+    //    ResourceId: "api",
+    //    HookableMethods: [
+    //        { ResourceId: "hookableMethod/Method1", Name: "Method1", hookIt: false },
+    //        { ResourceId: "hookableMethod/Method2", Name: "Method2", hookIt: true },
+    //    ]
+    //});
+    //console.log(uiApi);
+
     //api.echo("hello").then(response => console.log(`echo response: ${response}`));
-    api.getHookableMethods().then(x => console.log(`getHookableMethods`, x));
+    //api.getHookableMethods().then(x => console.log(`getHookableMethods`, x));
 }
 ws.start();
 
@@ -23,5 +42,9 @@ class KoTest {
     }
 }
 
+class AppModel {
+    
+}
+
 var koTest = new KoTest('first', 'last');
-ko.applyBindings(koTest);
+ko.applyBindings(koTest, document.getElementById("testModel"));

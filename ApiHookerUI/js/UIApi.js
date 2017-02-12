@@ -14,8 +14,7 @@ define(["require", "exports", "./UIObject", "./UIHookableMethod"], function (req
                 then(items => items.map(x => UIHookableMethod_1.default.createFrom(x)));
         }
     }
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = UIApi;
+    exports.UIApi = UIApi;
     ;
 });
 //# sourceMappingURL=UIApi.js.map

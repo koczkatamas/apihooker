@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 using LiveObjects.ModelDescription;
 using Newtonsoft.Json;
@@ -6,11 +7,20 @@ namespace ApiHooker.UiApi
 {
     public class UIProcess: ILiveObject
     {
-        [Publish]
-        public string ResourceId => $"process/{Path}";
+        public ProcessManager ProcessManager { get; protected set; }
+        public Process Process { get; protected set; }
+
+        public UIProcess(ProcessManager processManager)
+        {
+            ProcessManager = processManager;
+            Process = processManager.Process;
+        }
 
         [Publish]
-        public string Path { get; set; }
+        public string ResourceId => $"process/{Name}";
+
+        [Publish]
+        public string Name => Process.ProcessName;
 
         [Publish]
         public async Task HookMethodsAsync(UIHookableMethod[] methods)

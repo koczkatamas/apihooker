@@ -134,7 +134,7 @@ namespace LiveObjects.Communication
                 {
                     response.Error = MessageError.NoError;
                     response.MessageType = MessageType.GetResponse;
-                    response.Value = obj;
+                    response.Value = typeInfo.Serialize(ObjectContext, obj);
                 }
                 else if (request.MessageType == MessageType.SetProperty)
                 {

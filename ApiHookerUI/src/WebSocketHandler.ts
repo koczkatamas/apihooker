@@ -1,4 +1,4 @@
-import * as Api from "./UIApi";
+import * as Api from "./RemoteModel/UIApi";
 
 export default class WebSocketHandler {
     public socket: WebSocket;

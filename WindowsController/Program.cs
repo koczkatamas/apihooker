@@ -15,6 +15,8 @@ using ApiHooker.Communication;
 using ApiHooker.UiApi;
 using ApiHooker.Utils;
 using ApiHooker.VisualStudio;
+using LiveObjects.Communication;
+using LiveObjects.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using vtortola.WebSockets;
@@ -41,19 +43,15 @@ namespace ApiHooker
             Console.ReadLine();
         }
 
-        static async Task UIApiAsync(CancellationToken ct)
+        static async Task WsPublishAsync(IPEndPoint endPoint, MessageBridge bridge, string[] allowedOrigins, ILogger logger = null, CancellationToken ct = default(CancellationToken))
         {
             try
             {
-                var uiApi = new UIApi();
-                var jsonRpc = new LiveObjects.Communication.MessageBridge();
-                jsonRpc.ObjectContext.PublishObject(uiApi);
-
-                var webSocket = new WebSocketListener(new IPEndPoint(IPAddress.Loopback, 1338));
+                var webSocket = new WebSocketListener(endPoint);
                 webSocket.Standards.RegisterStandard(new WebSocketFactoryRfc6455(webSocket));
                 webSocket.Start();
 
-                Console.WriteLine("[UIApi] Started.");
+                logger?.Log("Started.");
 
                 while (!ct.IsCancellationRequested)
                 {
@@ -61,7 +59,8 @@ namespace ApiHooker
 
                     try
                     {
-                        if (client.HttpRequest.Headers["Origin"] != "http://127.0.0.1:8000")
+                        var origin = client.HttpRequest.Headers["Origin"];
+                        if (!allowedOrigins.Contains(origin))
                         {
                             await client.WriteStringAsync(@"{ ""Error"": ""NotAllowedOrigin"" }", ct);
                             client.Close();
@@ -72,21 +71,38 @@ namespace ApiHooker
                         {
                             var request = await client.ReadStringAsync(ct);
                             if (request == null) break;
-                            var response = await jsonRpc.ProcessMessageAsync(request);
+                            var response = await bridge.ProcessMessageAsync(request);
                             await client.WriteStringAsync(response, ct);
                         }
                     }
                     catch (Exception clientExc)
                     {
-                        Console.WriteLine($"[UIApi] Client Exception: {clientExc}");
+                        logger?.LogException(new Exception("WebSocket Client Exception", clientExc));
                     }
                 }
 
-                Console.WriteLine("[UIApi] Stopped.");
+                logger?.Log("Stopped.");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"[UIApi] Exception: {e}");
+                logger?.LogException(new Exception("WebSocket Client Exception", e));
+            }
+        }
+
+        static async Task UIApiAsync(CancellationToken ct)
+        {
+            var logger = new ConsoleLogger { Prefix = "UIApi" };
+            try
+            {
+                var uiApi = new UIApi();
+                var jsonRpc = new MessageBridge();
+                jsonRpc.ObjectContext.PublishObject(uiApi);
+
+                await WsPublishAsync(new IPEndPoint(IPAddress.Loopback, 1338), jsonRpc, new [] { "http://127.0.0.1:8000" }, logger, ct);
+            }
+            catch (Exception e)
+            {
+                logger.LogException(e);
             }
         }
 
@@ -96,7 +112,7 @@ namespace ApiHooker
             var tcpServer = new TcpListener(IPAddress.Loopback, serverPort);
             tcpServer.Start();
 
-            var testApp = ProcessManager.LaunchSuspended(AppDomain.CurrentDomain.BaseDirectory + "TestApp.exe");
+            var testApp = ProcessManager.LaunchSuspended("TestApp.exe");
             testApp.InjectHookerLib(serverPort);
 
             using (var client = new HookedClient(tcpServer.AcceptTcpClient()))

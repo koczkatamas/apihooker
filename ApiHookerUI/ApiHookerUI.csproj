@@ -35,10 +35,8 @@
     <TypeScriptCompile Include="src\app.ts" />
     <TypeScriptCompile Include="src\JsonRpc.ts" />
     <TypeScriptCompile Include="src\ObjectHelper.ts" />
-    <TypeScriptCompile Include="src\RpcMessage.ts" />
-    <TypeScriptCompile Include="src\UIApi.ts" />
-    <TypeScriptCompile Include="src\UIHookableMethod.ts" />
-    <TypeScriptCompile Include="src\UIObject.ts" />
+    <TypeScriptCompile Include="src\RemoteModel\UIApi.ts" />
+    <TypeScriptCompile Include="src\RemoteModel\UIHookableMethod.ts" />
     <TypeScriptCompile Include="src\WebSocketHandler.ts" />
     <TypeScriptCompile Include="src\require-config.ts" />
   </ItemGroup>
