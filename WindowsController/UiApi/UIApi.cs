@@ -1,23 +1,24 @@
 using System.Linq;
 using System.Threading.Tasks;
-using ApiHooker.UiApi.JsonRpc;
+using LiveObjects.ModelDescription;
 using Newtonsoft.Json;
 
 namespace ApiHooker.UiApi
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    public class UIApi: IUIObject
+    public class UIApi: ILiveObject
     {
-        [JsonProperty]
         public string ResourceId => "api";
 
+        [Publish]
         public async Task<string> EchoAsync(string message) => $"echo response: {message}";
 
+        [Publish]
         public async Task<UIProcess> LaunchAndInjectAsync(string path)
         {
             return new UIProcess { Path = path };
         }
 
+        [Publish]
         public async Task<UIHookableMethod[]> GetHookableMethodsAsync()
         {
             return typeof(ApiDefinitions).GetFields().Select(f => new UIHookableMethod { Name = f.Name }).ToArray();

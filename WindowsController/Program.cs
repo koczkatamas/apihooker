@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApiHooker.Communication;
 using ApiHooker.UiApi;
-using ApiHooker.UiApi.JsonRpc;
 using ApiHooker.Utils;
 using ApiHooker.VisualStudio;
 using Newtonsoft.Json;
@@ -47,8 +46,8 @@ namespace ApiHooker
             try
             {
                 var uiApi = new UIApi();
-                var jsonRpc = new JsonRpc();
-                jsonRpc.PublishObject(uiApi);
+                var jsonRpc = new LiveObjects.Communication.MessageBridge();
+                jsonRpc.ObjectContext.PublishObject(uiApi);
 
                 var webSocket = new WebSocketListener(new IPEndPoint(IPAddress.Loopback, 1338));
                 webSocket.Standards.RegisterStandard(new WebSocketFactoryRfc6455(webSocket));

@@ -57,7 +57,7 @@ class JsonRpc {
                 var msgHandler = this.msgHandlers[responseMsg.messageId];
                 console.log('msgHandler', msgHandler);
                 if (responseMsg.error === "NoError")
-                    msgHandler.resolve(responseMsg.result);
+                    msgHandler.resolve(responseMsg.value);
                 else
                     msgHandler.reject(responseMsg.error);
             }

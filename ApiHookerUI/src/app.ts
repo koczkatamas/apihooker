@@ -49,7 +49,7 @@ class RpcMessage {
     public resourceId: string;
     public methodName: string;
     public arguments: any[];
-    public result: any;
+    public value: any;
 
     public serialize(): string {
         return JSON.stringify(this);
@@ -72,7 +72,7 @@ class JsonRpc {
                 var msgHandler = this.msgHandlers[responseMsg.messageId];
                 console.log('msgHandler', msgHandler);
                 if (responseMsg.error === "NoError")
-                    msgHandler.resolve(responseMsg.result);
+                    msgHandler.resolve(responseMsg.value);
                 else
                     msgHandler.reject(responseMsg.error);
             }

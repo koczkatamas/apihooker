@@ -1,15 +1,14 @@
-using ApiHooker.UiApi.JsonRpc;
+using LiveObjects.ModelDescription;
 using Newtonsoft.Json;
 
 namespace ApiHooker.UiApi
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    public class UIHookableMethod : IUIObject
+    public class UIHookableMethod : ILiveObject
     {
-        [JsonProperty]
+        [Publish]
         public string ResourceId => $"hookableMethod/{Name}";
 
-        [JsonProperty]
+        [Publish]
         public string Name { get; set; }
     }
 }
