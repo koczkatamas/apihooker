@@ -7,6 +7,7 @@
 
 interface KnockoutStatic {
     track<T>(obj: T, propertyNames?: Array<string>): T;
+    track<T>(obj: T, { deep: boolean }): T;
     untrack(obj: any, propertyNames?: Array<string>): void;
     defineProperty<T>(obj: T, propertyName: string, evaluator: Function): T;
     defineProperty<T>(obj: T, propertyName: string, options: KnockoutDefinePropertyOptions): T;

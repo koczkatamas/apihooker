@@ -25,6 +25,8 @@
     <Content Include="css\app.css" />
     <Content Include="index.html" />
     <Content Include="lib\knockout\knockout-3.4.1.js" />
+    <Content Include="lib\knockout\knockout-es5.js" />
+    <Content Include="lib\knockout\knockout-es5.min.js" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\typings\knockout.es5\knockout.es5.d.ts" />

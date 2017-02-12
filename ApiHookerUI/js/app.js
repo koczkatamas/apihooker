@@ -1,4 +1,4 @@
-define(["require", "exports", "./WebSocketHandler", "./UIApi", "./JsonRpc"], function (require, exports, WebSocketHandler_1, UIApi_1, JsonRpc_1) {
+define(["require", "exports", "knockout", "./WebSocketHandler", "./UIApi", "./JsonRpc", "knockout-es5"], function (require, exports, ko, WebSocketHandler_1, UIApi_1, JsonRpc_1) {
     "use strict";
     var ws = new WebSocketHandler_1.default("ws://127.0.0.1:1338/");
     ws.onConnected = socket => {
@@ -8,5 +8,15 @@ define(["require", "exports", "./WebSocketHandler", "./UIApi", "./JsonRpc"], fun
         api.getHookableMethods().then(x => console.log(`getHookableMethods`, x));
     };
     ws.start();
+    class KoTest {
+        constructor(firstName, lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+            ko.track(this);
+        }
+        get fullName() { return `${this.firstName} ${this.lastName}`; }
+    }
+    var koTest = new KoTest('first', 'last');
+    ko.applyBindings(koTest);
 });
 //# sourceMappingURL=app.js.map
