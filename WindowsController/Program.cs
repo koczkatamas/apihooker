@@ -36,12 +36,49 @@ namespace ApiHooker
             //var typeInfosJson = JsonConvert.SerializeObject(typeInfos.Select(x => x.Value), Formatting.Indented);
 
             //JsonRpcTest.TestRpc();
-
-            UIApiAsync(CancellationToken.None);
+            new Program().Start();
 
             Console.WriteLine("UI API active. Press ENTER to exit.");
             Console.ReadLine();
         }
+
+        public AppModel AppModel { get; protected set; }
+
+        private void Start()
+        {
+            AppModel = new AppModel();
+            AppModel.Init();
+            UIApiAsync(CancellationToken.None);
+            TestApp();
+        }
+
+        void TestApp()
+        {
+            foreach (var hm in AppModel.HookableMethods)
+                hm.HookIt = true;
+
+            var testApp = AppModel.LaunchAndInject("TestApp.exe");
+
+            Thread.Sleep(500);
+
+            var callRecs = testApp.ReadNewCallRecords();
+
+            foreach (var callRec in callRecs)
+            {
+                Console.WriteLine(callRec);
+
+                foreach (var item in callRec.CallStack)
+                    if (item.Module != null)
+                        Console.WriteLine($" - {item.Module.Name}!0x{item.Address - item.Module.BaseAddr:x}");
+                    else
+                        Console.WriteLine($" - 0x{item.Address:x8}");
+
+                Console.WriteLine();
+            }
+
+            testApp.UnhookAndWaitForExit();
+        }
+
 
         static async Task WsPublishAsync(IPEndPoint endPoint, MessageBridge bridge, string[] allowedOrigins, ILogger logger = null, CancellationToken ct = default(CancellationToken))
         {
@@ -89,77 +126,19 @@ namespace ApiHooker
             }
         }
 
-        static async Task UIApiAsync(CancellationToken ct)
+        async Task UIApiAsync(CancellationToken ct)
         {
             var logger = new ConsoleLogger { Prefix = "UIApi" };
             try
             {
-                var uiApi = new UIApi();
                 var jsonRpc = new MessageBridge();
-                jsonRpc.ObjectContext.PublishObject(uiApi);
+                jsonRpc.ObjectContext.PublishObject(AppModel);
 
                 await WsPublishAsync(new IPEndPoint(IPAddress.Loopback, 1338), jsonRpc, new [] { "http://127.0.0.1:8000" }, logger, ct);
             }
             catch (Exception e)
             {
                 logger.LogException(e);
-            }
-        }
-
-        static void TestApp()
-        {
-            var serverPort = 1337;
-            var tcpServer = new TcpListener(IPAddress.Loopback, serverPort);
-            tcpServer.Start();
-
-            var testApp = ProcessManager.LaunchSuspended("TestApp.exe");
-            testApp.InjectHookerLib(serverPort);
-
-            using (var client = new HookedClient(tcpServer.AcceptTcpClient()))
-            {
-                //client.ShowMessageBox("Hello World!");
-                var methodsToHook = new[]
-                {
-                    ApiDefinitions.SetConsoleTitleA,
-                    ApiDefinitions.SetConsoleWindowInfo,
-                    ApiDefinitions.SetConsoleScreenBufferSize,
-                    ApiDefinitions.WriteConsoleOutputA,
-                    ApiDefinitions.GetConsoleTitleA
-                };
-
-                foreach (var m in methodsToHook)
-                    m.SaveCallback = true;
-
-                var hookedMethods = client.HookFuncs(methodsToHook);
-
-                VsDebuggerHelper.AttachToProcess(testApp.Process.Id);
-
-                testApp.ResumeMainThread();
-
-                Thread.Sleep(500);
-
-                var buffer = client.ReadBuffer();
-                var modules = ProcessHelper.GetProcessModules(testApp.Process.Id);
-
-                var callRecs = SerializationHelper.ProcessCallRecords(buffer, hookedMethods);
-                foreach (var callRec in callRecs)
-                {
-                    Console.WriteLine(callRec);
-
-                    foreach (var item in callRec.CallStack)
-                    {
-                        item.Module = modules.FirstOrDefault(x => x.BaseAddr <= item.Address && item.Address < x.EndAddr);
-                        if (item.Module != null)
-                            Console.WriteLine($" - {item.Module.Name}!0x{item.Address - item.Module.BaseAddr:x}");
-                        else
-                            Console.WriteLine($" - 0x{item.Address:x8}");
-                    }
-
-                    Console.WriteLine();
-                }
-
-                client.TerminateInjectionThread();
-                testApp.Process.WaitForExit();
             }
         }
     }

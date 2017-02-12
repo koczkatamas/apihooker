@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using ApiHooker.Model;
+using ApiHooker.UiApi;
 using ApiHooker.Utils;
 using ApiHooker.Utils.ExtensionMethods;
 
@@ -69,20 +70,20 @@ namespace ApiHooker.Communication
 
         public class HookedMethods
         {
-            public Dictionary<uint, ApiMethod> MethodIds { get; set; } = new Dictionary<uint, ApiMethod>();
+            public Dictionary<uint, HookedMethod> MethodIds { get; set; } = new Dictionary<uint, HookedMethod>();
         }
 
-        public HookedMethods HookFuncs(ApiMethod[] methods)
+        public HookedMethods HookFuncs(HookedMethod[] methods)
         {
             var ms = new MemoryStream();
             var bw = new BinaryWriter(ms);
             bw.Write(methods.Length);
             foreach (var m in methods)
             {
-                bw.WriteLenPrefixed(m.DllName);
-                bw.WriteLenPrefixed(m.MethodName);
+                bw.WriteLenPrefixed(m.ApiMethod.DllName);
+                bw.WriteLenPrefixed(m.ApiMethod.MethodName);
                 bw.Write((byte)(m.SaveCallback ? 1 : 0));
-                bw.WriteLenPrefixed(SerializationHelper.SerializeFieldDescriptors(m.Arguments.ToArray()));
+                bw.WriteLenPrefixed(SerializationHelper.SerializeFieldDescriptors(m.ApiMethod.Arguments.ToArray()));
             }
 
             var response = Call(PacketType.HookFuncs, ms.ToArray());

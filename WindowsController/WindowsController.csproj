@@ -104,9 +104,11 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Memory\RemoteMemoryManager.cs" />
+    <Compile Include="UiApi\HookedMethod.cs" />
     <Compile Include="UiApi\UIApi.cs" />
     <Compile Include="UiApi\UIHookableMethod.cs" />
-    <Compile Include="UiApi\UIProcess.cs" />
+    <Compile Include="UiApi\HookedProcess.cs" />
+    <Compile Include="Utils\ObservableRangeCollection.cs" />
     <Compile Include="Utils\ExtensionMethods\DictionaryExtensions.cs" />
     <Compile Include="Utils\FileUtils.cs" />
     <Compile Include="Utils\SerializationHelper.cs" />

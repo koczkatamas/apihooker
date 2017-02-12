@@ -37,6 +37,7 @@
     <TypeScriptCompile Include="src\ObjectHelper.ts" />
     <TypeScriptCompile Include="src\RemoteModel\UIApi.ts" />
     <TypeScriptCompile Include="src\RemoteModel\UIHookableMethod.ts" />
+    <TypeScriptCompile Include="src\RemoteModel\UIHookedProcess.ts" />
     <TypeScriptCompile Include="src\WebSocketHandler.ts" />
     <TypeScriptCompile Include="src\require-config.ts" />
   </ItemGroup>

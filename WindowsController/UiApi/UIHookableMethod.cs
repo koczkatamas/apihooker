@@ -6,6 +6,8 @@ namespace ApiHooker.UiApi
 {
     public class UIHookableMethod : ILiveObject
     {
+        public ApiMethod ApiMethod { get; protected set; }
+
         [Publish]
         public string ResourceId => $"hookableMethod/{Name}";
 
@@ -14,8 +16,6 @@ namespace ApiHooker.UiApi
 
         [Publish]
         public bool HookIt { get; set; }
-
-        public ApiMethod ApiMethod { get; protected set; }
 
         public UIHookableMethod(ApiMethod apiMethod)
         {

@@ -1,5 +1,5 @@
 import { ObjectHelper } from "../ObjectHelper";
-import {UIObject} from "../JsonRpc";
+import { UIObject } from "../JsonRpc";
 
 export default class UIHookableMethod extends UIObject {
     public name: string = '';

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ApiHooker.UiApi;
 using ApiHooker.Utils.ExtensionMethods;
 
 namespace ApiHooker.Model
@@ -13,7 +14,7 @@ namespace ApiHooker.Model
         public UInt32 FunctionId { get; set; }
         public UInt32 ThreadId { get; set; }
 
-        public ApiMethod ApiMethod { get; set; }
+        public HookedMethod Method { get; set; }
         public CallParameter[] ParametersBeforeCall { get; set; }
         public UInt32 ReturnValue { get; set; }
         public CallParameter[] ParametersAfterCall { get; set; }
@@ -21,7 +22,7 @@ namespace ApiHooker.Model
 
         public override string ToString()
         {
-            return $"{ApiMethod?.MethodName ?? $"Func #{FunctionId}"}({ParametersAfterCall?.Join(", ")}) = {ReturnValue}";
+            return $"{Method?.ApiMethod.MethodName ?? $"Func #{FunctionId}"}({ParametersAfterCall?.Join(", ")}) = {ReturnValue}";
         }
     }
 }

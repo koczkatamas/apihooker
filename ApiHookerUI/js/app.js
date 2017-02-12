@@ -7,7 +7,12 @@ define(["require", "exports", "knockout", "./WebSocketHandler", "./RemoteModel/U
     var ws = new WebSocketHandler_1.default("ws://127.0.0.1:1338/");
     ws.onConnected = socket => {
         rpc.setSocket(socket);
-        rpc.refreshObject(uiApi);
+        rpc.refreshObject(uiApi).then(() => {
+            console.log('loaded', uiApi);
+            uiApi.launchAndInject("TestApp.exe").then(p => {
+                console.log('launch process', p);
+            });
+        });
         //var api = new UIApi(rpc, "api");
         //rpc.refreshObject(api).then(() => {
         //    console.log('api.hookableMethods', api.hookableMethods);

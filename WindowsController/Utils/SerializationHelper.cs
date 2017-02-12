@@ -57,8 +57,8 @@ namespace ApiHooker.Utils
 
                 if (hookedMethods != null)
                 {
-                    cr.ApiMethod = hookedMethods.MethodIds[cr.FunctionId];
-                    if (cr.ApiMethod.SaveCallback)
+                    cr.Method = hookedMethods.MethodIds[cr.FunctionId];
+                    if (cr.Method.SaveCallback)
                     {
                         var callStackLen = brCr.ReadUInt32();
                         cr.CallStack = new List<CallStackEntry>((int)callStackLen);
@@ -66,9 +66,9 @@ namespace ApiHooker.Utils
                             cr.CallStack.Add(new CallStackEntry { Address = brCr.ReadUInt32() });
                     }
 
-                    cr.ParametersBeforeCall = ReadCallParameters(brCr, cr.ApiMethod.Arguments);
+                    cr.ParametersBeforeCall = ReadCallParameters(brCr, cr.Method.ApiMethod.Arguments);
                     cr.ReturnValue = brCr.ReadUInt32();
-                    cr.ParametersAfterCall = ReadCallParameters(brCr, cr.ApiMethod.Arguments);
+                    cr.ParametersAfterCall = ReadCallParameters(brCr, cr.Method.ApiMethod.Arguments);
                 }
 
                 result.Add(cr);
