@@ -18,6 +18,7 @@ namespace ApiHooker.UiApi
         public HookedClient HookedClient { get; set; }
         public HookedClient.HookedMethods HookedMethods { get; set; }
 
+        [Publish]
         public ObservableRangeCollection<CallRecord> CallRecords { get; set; } = new ObservableRangeCollection<CallRecord>();
 
         [Publish]

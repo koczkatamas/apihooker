@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -16,6 +17,7 @@ using ApiHooker.UiApi;
 using ApiHooker.Utils;
 using ApiHooker.VisualStudio;
 using LiveObjects.Communication;
+using LiveObjects.DependencyInjection;
 using LiveObjects.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -57,6 +59,39 @@ namespace ApiHooker
 
             UIApiAsync(CancellationToken.None);
             //TestApp();
+            //TestAppRpc();
+        }
+
+        void TestAppRpc()
+        {
+            var logger = new ConsoleLogger { Prefix = "TestAppRpc" };
+            Dependency.Register<ILogger>(logger);
+
+            var jsonRpc = new MessageBridge();
+            jsonRpc.ObjectContext.PublishObject(AppModel);
+
+            jsonRpc.ChangeMessageEvent += (bridge, msg) =>
+            {
+                Console.WriteLine($"Change msg: {msg.ResourceId}.{msg.PropertyName} ({msg.ListChanges?.Count ?? 1})");
+            };
+
+            var launchResult = jsonRpc.ProcessMessageAsync(new Message
+            {
+                MessageType = MessageType.Call,
+                ResourceId = "api",
+                MethodName = "LaunchAndHook",
+                Arguments = new List<object> { "TestApp.exe" }
+            }).Result;
+
+            var procResId = ((dynamic) launchResult.Value).ResourceId;
+
+            var readNewCallsResult = jsonRpc.ProcessMessageAsync(new Message
+            {
+                MessageType = MessageType.Call,
+                ResourceId = procResId,
+                MethodName = "ReadNewCallRecords",
+                Arguments = new List<object>()
+            }).Result;
         }
 
         void TestApp()
@@ -95,6 +130,19 @@ namespace ApiHooker
         {
             try
             {
+                var clients = new List<WebSocket>();
+
+                bridge.ChangeMessageEvent += (_, changeMsg) =>
+                {
+                    WebSocket[] clientsCopy;
+                    lock (clients)
+                        clientsCopy = clients.ToArray();
+
+                    var changeMsgStr = bridge.SerializeMessage(changeMsg);
+                    foreach (var c in clientsCopy)
+                        c.WriteStringAsync(changeMsgStr, ct);
+                };
+
                 var webSocket = new WebSocketListener(endPoint);
                 webSocket.Standards.RegisterStandard(new WebSocketFactoryRfc6455(webSocket));
                 webSocket.Start();
@@ -104,6 +152,8 @@ namespace ApiHooker
                 while (!ct.IsCancellationRequested)
                 {
                     var client = await webSocket.AcceptWebSocketAsync(ct);
+                    lock(clients)
+                        clients.Add(client);
 
                     try
                     {
@@ -127,6 +177,9 @@ namespace ApiHooker
                     {
                         logger?.LogException(new Exception("WebSocket Client Exception", clientExc));
                     }
+
+                    lock (clients)
+                        clients.Remove(client);
                 }
 
                 logger?.Log("Stopped.");
@@ -140,6 +193,8 @@ namespace ApiHooker
         async Task UIApiAsync(CancellationToken ct)
         {
             var logger = new ConsoleLogger { Prefix = "UIApi" };
+            Dependency.Register<ILogger>(logger);
+
             try
             {
                 var jsonRpc = new MessageBridge();

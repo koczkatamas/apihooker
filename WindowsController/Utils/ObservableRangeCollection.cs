@@ -20,9 +20,10 @@ public class ObservableRangeCollection<T> : ObservableCollection<T>
 
         var startIdx = Items.Count;
 
-        foreach (var i in collection) Items.Add(i);
+        var list = collection.ToList();
+        foreach (var i in list) Items.Add(i);
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, collection, startIdx));
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, startIdx));
     }
 
     /// <summary> 
@@ -35,9 +36,10 @@ public class ObservableRangeCollection<T> : ObservableCollection<T>
 
         var startIdx = Items.Count;
 
-        foreach (var i in collection) Items.Remove(i);
+        var list = collection.ToList();
+        foreach (var i in list) Items.Remove(i);
 
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, collection, startIdx));
+        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list, startIdx));
 
     }
 

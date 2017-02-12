@@ -191,6 +191,15 @@ namespace LiveObjects.Communication
             return response;
         }
 
+        public string SerializeMessage(Message msg)
+        {
+            return JsonConvert.SerializeObject(msg, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new LiveObjectResolver(ObjectContext.TypeContext)
+            });
+        }
+
         public async Task<string> ProcessMessageAsync(string request)
         {
             Message requestObj = null, responseObj = null;
@@ -207,11 +216,8 @@ namespace LiveObjects.Communication
             if(requestObj != null)
                 responseObj = await ProcessMessageAsync(requestObj);
 
-            return JsonConvert.SerializeObject(responseObj, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                ContractResolver = new LiveObjectResolver(ObjectContext.TypeContext)
-            });
+            var response = SerializeMessage(responseObj);
+            return response;
         }
     }
 }
