@@ -5,6 +5,12 @@ define(["require", "exports", "../JsonRpc"], function (require, exports, JsonRpc
             super(...arguments);
             this.name = '';
         }
+        readNewCallRecords() {
+            return this.jsonRpc.call(this.resourceId, "ReadNewCallRecords", []);
+        }
+        unhookAndWaitForExit() {
+            return this.jsonRpc.call(this.resourceId, "UnhookAndWaitForExit", []);
+        }
     }
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = UIProcess;

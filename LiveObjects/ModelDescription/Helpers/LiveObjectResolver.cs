@@ -17,7 +17,7 @@ namespace LiveObjects.ModelDescription.Helpers
 
         protected override List<MemberInfo> GetSerializableMembers(Type objectType)
         {
-            var objectDescriptor = (ObjectDescriptor) TypeContext.GetTypeDescriptor(objectType, false);
+            var objectDescriptor = TypeContext.GetTypeDescriptor(objectType, false) as ObjectDescriptor;
             if (objectDescriptor == null)
                 return base.GetSerializableMembers(objectType);
             return objectDescriptor.Properties.Select(x => (MemberInfo) x.Value.PropertyInfo).ToList();

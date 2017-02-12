@@ -75,6 +75,9 @@ namespace ApiHooker.Communication
 
         public HookedMethods HookFuncs(HookedMethod[] methods)
         {
+            if (methods.Length == 0)
+                return new HookedMethods();
+
             var ms = new MemoryStream();
             var bw = new BinaryWriter(ms);
             bw.Write(methods.Length);

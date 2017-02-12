@@ -26,6 +26,7 @@ namespace ApiHooker.UiApi
         [Publish]
         public string Name => ProcessManager.Process.ProcessName;
 
+        [Publish]
         public CallRecord[] ReadNewCallRecords()
         {
             var buffer = HookedClient.ReadBuffer();
@@ -40,6 +41,7 @@ namespace ApiHooker.UiApi
             return callRecs;
         }
 
+        [Publish]
         public void UnhookAndWaitForExit()
         {
             HookedClient.TerminateInjectionThread();

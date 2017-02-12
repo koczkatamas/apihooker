@@ -46,18 +46,29 @@ namespace ApiHooker
 
         private void Start()
         {
+            foreach(var p in Process.GetProcessesByName("TestApp.exe"))
+                p.Kill();
+
             AppModel = new AppModel();
             AppModel.Init();
+
+            foreach (var hm in AppModel.HookableMethods)
+                hm.HookIt = true;
+
             UIApiAsync(CancellationToken.None);
-            TestApp();
+            //TestApp();
         }
 
         void TestApp()
         {
-            foreach (var hm in AppModel.HookableMethods)
-                hm.HookIt = true;
-
             var testApp = AppModel.LaunchAndInject("TestApp.exe");
+
+            var methodsToHook = AppModel.HookableMethods.Select(x => new HookedMethod(x.ApiMethod) { SaveCallback = true }).ToArray();
+            testApp.HookedMethods = testApp.HookedClient.HookFuncs(methodsToHook);
+
+            VsDebuggerHelper.AttachToProcess(testApp.ProcessManager.Process.Id);
+
+            testApp.ProcessManager.ResumeMainThread();
 
             Thread.Sleep(500);
 

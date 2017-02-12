@@ -10,7 +10,8 @@ export default class UIApi extends UIObject {
         return this.jsonRpc.call(this.resourceId, "Echo", [message]).then(x => <string>x);
     }
 
-    launchAndInject(path: string): Promise<UIProcess> {
-        return this.jsonRpc.call(this.resourceId, "LaunchAndInject", [path]).then(x => <UIProcess>x);
+    launchAndHook(path: string): Promise<UIProcess> {
+        return this.jsonRpc.call(this.resourceId, "LaunchAndHook", [path])
+            .then(x => this.jsonRpc.createFrom(UIProcess, x));
     }
 };

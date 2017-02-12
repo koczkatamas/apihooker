@@ -33,7 +33,6 @@ namespace ApiHooker.UiApi
             tcpServer.Start();
         }
 
-        [Publish]
         public HookedProcess LaunchAndInject(string path)
         {
             var p = new HookedProcess();
@@ -43,10 +42,16 @@ namespace ApiHooker.UiApi
 
             p.HookedClient = new HookedClient(tcpServer.AcceptTcpClient());
 
+            return p;
+        }
+
+        [Publish]
+        public HookedProcess LaunchAndHook(string path)
+        {
+            var p = LaunchAndInject(path);
+
             var methodsToHook = HookableMethods.Where(x => x.HookIt).Select(x => new HookedMethod(x.ApiMethod) { SaveCallback = true }).ToArray();
             p.HookedMethods = p.HookedClient.HookFuncs(methodsToHook);
-
-            VsDebuggerHelper.AttachToProcess(p.ProcessManager.Process.Id);
 
             p.ProcessManager.ResumeMainThread();
 

@@ -9,8 +9,9 @@ define(["require", "exports", "../JsonRpc", "./UIHookableMethod", "./UIHookedPro
         echo(message) {
             return this.jsonRpc.call(this.resourceId, "Echo", [message]).then(x => x);
         }
-        launchAndInject(path) {
-            return this.jsonRpc.call(this.resourceId, "LaunchAndInject", [path]).then(x => x);
+        launchAndHook(path) {
+            return this.jsonRpc.call(this.resourceId, "LaunchAndHook", [path])
+                .then(x => this.jsonRpc.createFrom(UIHookedProcess_1.default, x));
         }
     }
     Object.defineProperty(exports, "__esModule", { value: true });
